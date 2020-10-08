@@ -32,7 +32,7 @@ php artisan migrate
 
 ## Registering the event subscriber
 
-Laravel Workflow comes with an event subscriber that listens for finished jobs and checks if they are part of a workflow. If so, it will notify the corresponding workflow.
+Laravel Workflow comes with an event subscriber that listens for finished jobs and checks if they are part of a workflow. If so, it will notify the corresponding workflow that one of its jobs has finished.
 
 To register the event subscriber, add them to the `$subscribe` array inside your application's `EventServiceProvider`.
 
@@ -51,4 +51,4 @@ class EventServiceSubscriber extends ServiceProvider
 }
 ```
 
-That's all the setup necessary. Next, let's look at how we can get our jobs to work inside workflow.
+That's all the setup necessary. Next, let's look at how we can get our jobs to work inside a workflow.

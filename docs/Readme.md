@@ -3,32 +3,35 @@
 Laravel Workflow is a package to build and manage complex workflows of interdependant jobs using Laravel's queueing system.
 
 ```php
-Workflow::withInitialJobs([
-    new ProcessPodcast($podcast),
-    new OptimizePodcast($podcast),
-])
-  ->addJob(new ReleaseOnTransistorFM($podcast), [
-      // These are the jobs dependencies. The job will only
-      // run when both of these jobs have finished.
-      ProcessPodcast::class,
-      OptimizePodcast::class
-  ])
-  ->addJob(new ReleaseOnApplePodcasts($podcast), [
-      ProcessPodcast::class,
-      OptimizePodcast::class
-  ])
-  ->addJob(new CreateAudioTranscription($podcast), [
-      ProcessPodcast::class,
-  ])
-  ->addJob(new TranslateAudioTranscription($podcast), [
-      CreateAudioTranscription::class,
-  ]);
-  ->addJob(new SendTweetAboutNewPodcast($podcast), [
-      CreateAudioTranscription::class,
-      ReleaseOnTransistorFM::class,
-      ReleaseOnApplePodcasts::class,
-  ])
-  ->start();
+Workflow::new('Publish new podcast')
+    ->addJob(new ProcessPodcast($podcast))
+    ->addJob(new OptimizePodcast($podcast))
+    ->addJob(new ReleaseOnTransistorFM($podcast), [
+        // These are the job's dependencies. The job will only
+        // run when all of its dependencies have finished.
+        ProcessPodcast::class,
+        OptimizePodcast::class
+    ])
+    ->addJob(new ReleaseOnApplePodcasts($podcast), [
+        ProcessPodcast::class,
+        OptimizePodcast::class
+    ])
+    ->addJob(new CreateAudioTranscription($podcast), [
+        ProcessPodcast::class,
+    ])
+    ->addJob(new TranslateAudioTranscription($podcast), [
+        CreateAudioTranscription::class,
+    ])
+    ->addJob(new NotifySubscribers($podcast), [
+        ReleaseOnTransistorFM::class,
+        ReleaseOnApplePodcasts::class,
+    ])
+    ->addJob(new SendTweetAboutNewPodcast($podcast), [
+        TranslateAudioTranscription::class,
+        ReleaseOnTransistorFM::class,
+        ReleaseOnApplePodcasts::class,
+    ])
+    ->start();
 ```
 
 This would create a workflow that looks like this:

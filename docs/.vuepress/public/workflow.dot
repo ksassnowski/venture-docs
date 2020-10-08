@@ -5,6 +5,8 @@ digraph G {
     OptimizePodcast -> ReleaseOnApplePodcasts;
     OptimizePodcast -> ReleaseOnTransistorFM;
     ReleaseOnTransistorFM -> SendTweetAboutNewPodcast;
+    ReleaseOnTransistorFM -> NotifySubscribers;
+    ReleaseOnApplePodcasts -> NotifySubscribers;
     ReleaseOnApplePodcasts -> SendTweetAboutNewPodcast;
     CreateAudioTranscription -> TranslateAudioTranscription;
     TranslateAudioTranscription -> SendTweetAboutNewPodcast;

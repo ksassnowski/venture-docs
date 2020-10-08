@@ -1,6 +1,6 @@
 # Preparing your Jobs
 
-This package works similar to how [job batching](https://laravel.com/docs/8.x/queues#job-batching) works in Laravel 8. To make our jobs usable inside a workflow, we need to add the `WorkflowStep` trait to our jobs.
+To make our jobs able to be run inside a workflow, all we need to do is use the `WorkflowStep` trait that comes with this package.
 
 ```php{5,9}
 <?php

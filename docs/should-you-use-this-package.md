@@ -18,11 +18,10 @@ Bus::batch([
 **Workflows**
 
 ```php
-Workflow::withInitialJobs([
-    new Job1(),
-    new Job2(),
-])
-    ->addJob(new Job3(), [Job1::class, Job2::class])
+Workflow::new()
+    ->addJob(new Job1())
+    ->addJob(new Job2())
+    ->addJob(new Job3())
     ->addJob(new Job4(), [Job3::class])
     ->start();
 ```
@@ -38,3 +37,5 @@ If this is level of complexity you have to deal with inside your workflows, then
 Let's look at the example from the introduction again. This is the dependency graph that we are trying to model.
 
 ![](/workflow.svg)
+
+This is where it starts to get interesting. You have a workflow with very complex interdependencies between jobs. Some jobs depend on more than one step to finish, some only one a single job and some don't have any dependencies at all.
