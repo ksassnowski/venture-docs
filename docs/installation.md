@@ -24,7 +24,7 @@ This will create a `workflow.php` file in your application's `config` directory.
 
 This package creates two new tables. By default they are named `workflows` and `workflow_jobs`. Both of these values can be overwritten inside the configuration file.
 
-To the migrations, run
+To execute the migrations, run
 
 ```bash
 php artisan migrate
@@ -32,7 +32,7 @@ php artisan migrate
 
 ## Registering the event subscriber
 
-Laravel Workflow comes with an event subscriber that listens on finished jobs and checks if they are part of a workflow. If so, it will notify the corresponding workflow.
+Laravel Workflow comes with an event subscriber that listens for finished jobs and checks if they are part of a workflow. If so, it will notify the corresponding workflow.
 
 To register the event subscriber, add them to the `$subscribe` array inside your application's `EventServiceProvider`.
 
@@ -50,3 +50,5 @@ class EventServiceSubscriber extends ServiceProvider
     ];
 }
 ```
+
+That's all the setup necessary. Next, let's look at how we can get our jobs to work inside workflow.

@@ -12,6 +12,7 @@ module.exports = {
         collapsable: false,
         children: [
           ["/", "Introduction"],
+          ["/should-you-use-this-package", "Should you use this package?"],
           ["/installation", "Installation"],
         ],
       },
@@ -19,7 +20,7 @@ module.exports = {
         title: "Usage",
         collapsable: false,
         children: [
-          ["/usage/", "Preparing your jobs"],
+          ["/usage/preparing-your-jobs", "Preparing your jobs"],
           ["/usage/configuring-workflows", "Configuring workflows"],
           ["/usage/keeping-track-of-workflows", "Keeping track of workflows"],
           ["/usage/caveats-and-limitations", "Caveats and limitations"],

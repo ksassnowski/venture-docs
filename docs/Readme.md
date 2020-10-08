@@ -24,13 +24,15 @@ Workflow::withInitialJobs([
       CreateAudioTranscription::class,
   ]);
   ->addJob(new SendTweetAboutNewPodcast($podcast), [
+      CreateAudioTranscription::class,
       ReleaseOnTransistorFM::class,
       ReleaseOnApplePodcasts::class,
-  ]);
+  ])
+  ->start();
 ```
 
 This would create a workflow that looks like this:
 
 ![](/workflow.svg)
 
-The package will take care of running the jobs in the correct order and waiting for all dependencies of a job to be resolved before starting it. It also provides a way to inspect a workflow and each of its jobs.
+The package will take care of running the jobs in the correct order--parallelizing jobs that don't have any interdependencies--and waiting for all dependencies of a job to be resolved before starting it. It also provides a way to inspect a workflow and each of its jobs.
