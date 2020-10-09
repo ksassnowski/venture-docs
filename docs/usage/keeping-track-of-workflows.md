@@ -15,7 +15,7 @@ A workflow is just a regular Eloquent model, so you can do all the things with i
 
 ## Performing an action after the workflow has finished
 
-Similar (read: exactly the same) to how [batches work in Laravel](https://laravel.com/docs/8.x/queues#dispatching-batches), you can register a callback to execute after the workflow has finished. To do so, chain a `then` call before you start your workflow and pass in a closure.
+Similar to how [batches work in Laravel](https://laravel.com/docs/8.x/queues#dispatching-batches), you can register a callback to execute after the workflow has finished. To do so, chain a `then` call before you start your workflow and pass in a closure.
 
 ```php
 Workflow::new('Example Workflow')

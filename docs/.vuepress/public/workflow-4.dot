@@ -1,0 +1,8 @@
+digraph G {
+    ProcessPodcast -> ReleaseOnApplePodcasts;
+    ProcessPodcast -> ReleaseOnTransistorFM;
+    ProcessPodcast -> CreateAudioTranscription;
+    OptimizePodcast -> ReleaseOnApplePodcasts;
+    OptimizePodcast -> ReleaseOnTransistorFM;
+    CreateAudioTranscription -> TranslateAudioTranscription;
+}

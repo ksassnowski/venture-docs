@@ -12,8 +12,8 @@ module.exports = {
         collapsable: false,
         children: [
           ["/", "Introduction"],
-          ["/should-you-use-this-package", "Should you use this package?"],
           ["/installation", "Installation"],
+          ["/should-you-use-this-package", "Should you use this package?"],
         ],
       },
       {
