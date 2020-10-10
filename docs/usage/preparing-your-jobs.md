@@ -4,7 +4,7 @@
 
 ## Overview
 
-To make our jobs able to be run inside a workflow, all we need to do is use the `WorkflowStep` trait that comes with Venture.
+All we need to do to enable our jobs to be run inside a workflow is to make them use the `WorkflowStep` trait that comes with Venture.
 
 ```php{5,9}
 <?php
@@ -21,7 +21,7 @@ class MyJob
 
 Doing so will enable the package to keep track of both the dependencies of a job as well as the job that are dependant on it. It also allows us keep track of the state of each step inside a workflow.
 
-::: tip 💡 Tip
+::: tip Tip
 If you get an error about calling an undefined method `withWorkflowId` on a job, you probably forgot to add the trait to your job.
 :::
 

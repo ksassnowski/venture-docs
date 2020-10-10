@@ -4,7 +4,7 @@ Venture is still in early development and as such has a few limitations and thin
 
 ## Circular Dependencies
 
-The package currently does not check for circular dependencies in your graph.
+The package currently does not check for circular dependencies in your workflow.
 
 ## Duplicate Jobs
 

@@ -36,7 +36,7 @@ When designing your `catch` callback, be aware that it might be called multiple 
 
 ## Cancelling a workflow
 
-You can mark a workflow as cancelled by calling its `cancel` method. This is usually going to happen inside the workflow's `catch` callback, but there's nothing stopping you from fetching a workflow from the database and calling its `cancel` function there.
+You can mark a workflow as cancelled by calling its `cancel` method. This is usually going to happen inside the workflow's `catch` callback, but there's nothing stopping you from fetching a workflow from the database and calling its `cancel` function there. This can be useful if you want to display a _Cancel Workflow_ button in your UI for example.
 
 ```php{4}
 Workflow::new('Register Podcast')

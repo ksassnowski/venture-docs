@@ -25,7 +25,7 @@ After installing Venture, there are a few things we need to do to prepare our ap
 First, we need to publish the configuration that comes with Venture. You can do so by running the following artisan command:
 
 ```bash
-php artisan vendor:publish --vendor="Sassnowski\Venture"
+php artisan vendor:publish --provider="Sassnowski\Venture\VentureServiceProvider"
 ```
 
 This will create a `venture.php` file in your application's `config` directory.
@@ -44,7 +44,7 @@ php artisan migrate
 
 Venture comes with an event subscriber that listens for finished jobs and checks if they are part of a workflow. If so, it will notify the corresponding workflow that one of its jobs has finished.
 
-To register the event subscriber, add them to the `$subscribe` array inside your application's `EventServiceProvider`.
+To register the event subscriber, add it to the `$subscribe` array inside your application's `EventServiceProvider`.
 
 ```php{10}
 <?php
@@ -60,5 +60,9 @@ class EventServiceSubscriber extends ServiceProvider
     ];
 }
 ```
+
+:::warning Important
+The event subscriber is critical for Venture to work properly, so don't forget to register it!
+:::
 
 That's all the setup necessary. Next, let's look at how we can get our jobs to work inside a workflow.

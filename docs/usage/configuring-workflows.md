@@ -16,7 +16,7 @@ When you later fetch a workflow from the database, you can retrieve its name via
 
 ## Adding jobs to a workflow
 
-In order to add a job to a workflow, you use the `addJob` method on the workflow builder and pass an instance of a job to it.
+In order to add a job to a workflow, use the `addJob` method on the workflow builder and pass an instance of a job to it.
 
 ```php
 $podcast = Podcast::find(1);
@@ -28,7 +28,7 @@ Workflow::new('Publish new podcast')
 
 ### Jobs with dependencies
 
-Venture really starts to shine once you start adding jobs that have dependencies. To define a job's dependencies, you pass in an array of class names as the second parameter to the `addJob` method.
+Venture really starts to shine once you start adding jobs that have dependencies. To define a job's dependencies, pass in an array of class names as the second parameter to the `addJob` method.
 
 ```php{4-7}
 Workflow::new('Publish new podcast')
@@ -46,7 +46,7 @@ The workflow we have configured so far would look like this.
 
 ![](/workflow-3.svg)
 
-From this point, you can keep adding jobs to the workflow and it will keep track all dependencies. All you need to do is to define a job's direct dependencies.
+From this point, you can keep adding jobs to the workflow and it will keep track of all dependencies. All you need to do is to define a job's direct dependencies.
 
 ```php
 Workflow::new('Publish new podcast')
@@ -73,7 +73,7 @@ Workflow::new('Publish new podcast')
 ::: tip Direct and transitive dependencies
 If we look at the diagram above, `TranslateAudioTranscription` has a _direct_ dependency on `CreateAudioTranscription`. `CreateAudioTranscription` in turn has a dependency on `ProccessPodcast`. This makes `ProcessPodcast` a _transitive_ dependency of `TranslateAudioTranscription` (think dependency of a dependency).
 
-Luckily, you don't have to worry about where exactly a job fits into a workflow. All you need to know is what a jobs _direct_ dependencies are and Venture will figure out the rest.
+Luckily, you don't have to worry about how exactly a job fits into a workflow. All you need to know is what a jobs _direct_ dependencies are and Venture will figure out the rest.
 :::
 
 ::: warning Note
@@ -105,7 +105,7 @@ $workflow = Workflow::new('Publish new podcast')
     ->start();
 ```
 
-Venture will now figure out which jobs can be immediately dispatched–because they don't have any dependencies–and process them in parallel. Every time a job finishes, it will check if any of the job's _dependant_ jobs are now ready to run. If so, it will dispatch them.
+Venture will now figure out which jobs can be immediately dispatched–because they don't have any dependencies–and process them in parallel. Every time a job finishes, it will check if any of the job's _dependant_ jobs are now ready to be run. If so, it will dispatch them.
 
 :::tip Dependant jobs and dependencies
 A _dependant_ job is a job that is waiting for another job to finish. In other words, if `JobB` needs `JobA` to finish before it can run, `JobB` is a dependant on `JobA`.
