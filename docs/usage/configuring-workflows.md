@@ -36,7 +36,7 @@ Workflow::new('Publish new podcast')
     ]);
 ```
 
-In this example your telling the workflow that the `PublishPodcastOnTransistorFM` job can only run once both `ProcessPodcast` and `OptimizePodcast` have finished.
+In this example you're telling Venture that the `PublishPodcastOnTransistorFM` job can only run once both `ProcessPodcast` and `OptimizePodcast` have finished.
 
 The workflow we have configured so far would look like this.
 
