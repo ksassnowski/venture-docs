@@ -1,6 +1,6 @@
-# Should you use this package?
+# Should you use Venture?
 
-If you are familiar with [job batching](https://laravel.com/docs/8.x/queues#job-batching) in Laravel, you might be wondering if this package isn't doing the same thing. Especially now that it's possible to nest chained jobs inside batches. Compare these two examples, the first one using Laravel's batching feature and the second one using this package.
+If you are familiar with [job batching](https://laravel.com/docs/8.x/queues#job-batching) in Laravel, you might be wondering if Venture isn't doing the same thing. Especially now that it's possible to nest chained jobs inside batches. Compare these two examples, the first one using Laravel's batching feature and the second one using Venture.
 
 **Laravel Batches**
 

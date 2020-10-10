@@ -1,10 +1,10 @@
 module.exports = {
-  title: "Laravel Workflow",
-  description: "Crazy workflows, oida.",
+  title: "Venture",
+  description: "A package to manage complex workflows built on top off Laravel's queue.",
 
   themeConfig: {
-    repo: "ksassnowski/laravel-workflow",
-    docsRepo: "ksassnowski/laravel-workflow-docs",
+    repo: "ksassnowski/venture",
+    docsRepo: "ksassnowski/venture-docs",
 
     sidebar: [
       {
@@ -13,7 +13,7 @@ module.exports = {
         children: [
           ["/", "Introduction"],
           ["/installation", "Installation"],
-          ["/should-you-use-this-package", "Should you use this package?"],
+          ["/should-you-use-venture", "Should you use Venture?"],
         ],
       },
       {

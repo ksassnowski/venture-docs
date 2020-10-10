@@ -1,10 +1,10 @@
 # Installation and Setup
 
 ::: warning NOTE
-This package requires PHP **7.4** and Laravel **8.x**
+Venture requires PHP **7.4** and Laravel **8.x**
 :::
 
-You can install this package through composer
+You can install Venture through composer
 
 ```bash
 composer require sassnowski/laravel-workflow
@@ -12,17 +12,17 @@ composer require sassnowski/laravel-workflow
 
 ## Publishing the configuration
 
-Next, we need to publish the configuration that comes with this package. You can do so by running the following artisan command:
+Next, we need to publish the configuration that comes with Venture. You can do so by running the following artisan command:
 
 ```bash
-php artisan vendor:publish --vendor="Sassnowski\LaravelWorkflow"
+php artisan vendor:publish --vendor="Sassnowski\Venture"
 ```
 
-This will create a `workflow.php` file in your application's `config` directory.
+This will create a `venture.php` file in your application's `config` directory.
 
 ## Running the migrations
 
-This package creates two new tables. By default they are named `workflows` and `workflow_jobs`. Both of these values can be overwritten inside the configuration file.
+Venture creates two new tables. By default they are named `workflows` and `workflow_jobs`. Both of these values can be overwritten inside the configuration file.
 
 To execute the migrations, run
 
@@ -41,7 +41,7 @@ To register the event subscriber, add them to the `$subscribe` array inside your
 
 namespace App\Providers;
 
-use Sassnowski\LaravelWorkflow\WorkflowEventSubscriber;
+use Sassnowski\Venture\WorkflowEventSubscriber;
 
 class EventServiceSubscriber extends ServiceProvider
 {

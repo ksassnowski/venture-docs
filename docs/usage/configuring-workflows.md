@@ -3,7 +3,7 @@
 Now you're ready to create your first workflow. To start, call the static `new` method on the `Workflow` class and give your workflow a name.
 
 ```php
-use Sassnowski\LaravelWorkflow;
+use Sassnowski\Venture;
 
 Workflow::new('Publish new podcast');
 ```
@@ -24,7 +24,7 @@ Workflow::new('Publish new podcast')
 
 ### Jobs with dependencies
 
-The real meat of this package is once you start adding jobs that have dependencies. To define a job's dependencies, you pass in an array of class names as the second parameter to the `addJob` method.
+Venture really starts to shine once you start adding jobs that have dependencies. To define a job's dependencies, you pass in an array of class names as the second parameter to the `addJob` method.
 
 ```php{4-7}
 Workflow::new('Publish new podcast')
@@ -67,7 +67,7 @@ Workflow::new('Publish new podcast')
 ![](/workflow-4.svg)
 
 ::: warning Note
-Since this package is still in early development, there are few caveats for defining worklows. For example you can't have multiple instances of the same job within a workflow. Check the [Caveats and limiations](/usage/caveats-and-limitations) page for more information.
+Since Venture is still in early development, there are few caveats for defining worklows. For example you can't have multiple instances of the same job within a workflow. Check the [Caveats and limiations](/usage/caveats-and-limitations) page for more information.
 :::
 
 ### Naming jobs

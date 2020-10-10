@@ -1,6 +1,6 @@
 # Caveats and limitations
 
-This package is in early development and as such has a few limitations and things you should be aware of before using it in production.
+Venture is still in early development and as such has a few limitations and things you should be aware of before using it in production.
 
 ## Circular Dependencies
 

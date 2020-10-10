@@ -1,13 +1,13 @@
 # Preparing your Jobs
 
-To make our jobs able to be run inside a workflow, all we need to do is use the `WorkflowStep` trait that comes with this package.
+To make our jobs able to be run inside a workflow, all we need to do is use the `WorkflowStep` trait that comes with Venture.
 
 ```php{5,9}
 <?php
 
 namespace App\Jobs;
 
-use Sassnowski\LaravelWorkflow\WorkflowStep;
+use Sassnowski\Venture\WorkflowStep;
 
 class MyJob
 {
