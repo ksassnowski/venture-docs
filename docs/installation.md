@@ -6,7 +6,7 @@
 
 ### Requirements
 
-Venture requires PHP **7.4** and Laravel **8.x**
+Venture requires PHP 7.4 and Laravel 8.
 
 ### Insatlling Venture
 
