@@ -1,6 +1,6 @@
 # Venture
 
-Laravel Workflow is a package to build and manage complex workflows of interdependant jobs using Laravel's queueing system.
+Venture is a package to help you build and manage complex workflows of interdependant jobs using Laravel's queueing system.
 
 ```php
 Workflow::new('Publish new podcast')
