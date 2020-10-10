@@ -1,4 +1,4 @@
-# Laravel Workflow
+# Venture
 
 Laravel Workflow is a package to build and manage complex workflows of interdependant jobs using Laravel's queueing system.
 
