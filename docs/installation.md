@@ -1,18 +1,28 @@
-# Installation and Setup
+# Installation
 
-::: warning NOTE
+[[toc]]
+
+## Installation
+
+### Requirements
+
 Venture requires PHP **7.4** and Laravel **8.x**
-:::
+
+### Insatlling Venture
 
 You can install Venture through composer
 
 ```bash
-composer require sassnowski/laravel-workflow
+composer require sassnowski/venture
 ```
 
-## Publishing the configuration
+## Preparing the application
 
-Next, we need to publish the configuration that comes with Venture. You can do so by running the following artisan command:
+After installing Venture, there are a few things we need to do to prepare our application.
+
+### Publishing the configuration
+
+First, we need to publish the configuration that comes with Venture. You can do so by running the following artisan command:
 
 ```bash
 php artisan vendor:publish --vendor="Sassnowski\Venture"
@@ -20,9 +30,9 @@ php artisan vendor:publish --vendor="Sassnowski\Venture"
 
 This will create a `venture.php` file in your application's `config` directory.
 
-## Running the migrations
+### Running the migrations
 
-Venture creates two new tables. By default they are named `workflows` and `workflow_jobs`. Both of these values can be overwritten inside the configuration file.
+Venture creates two new tables. By default they are named `workflows` and `workflow_jobs`. Both of these values can be overwritten inside the configuration file (see the [configuration page](/configuration/table-names) for more information).
 
 To execute the migrations, run
 
@@ -30,9 +40,9 @@ To execute the migrations, run
 php artisan migrate
 ```
 
-## Registering the event subscriber
+### Registering the event subscriber
 
-Laravel Workflow comes with an event subscriber that listens for finished jobs and checks if they are part of a workflow. If so, it will notify the corresponding workflow that one of its jobs has finished.
+Venture comes with an event subscriber that listens for finished jobs and checks if they are part of a workflow. If so, it will notify the corresponding workflow that one of its jobs has finished.
 
 To register the event subscriber, add them to the `$subscribe` array inside your application's `EventServiceProvider`.
 

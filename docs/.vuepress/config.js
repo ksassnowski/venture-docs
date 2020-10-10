@@ -13,7 +13,6 @@ module.exports = {
         children: [
           ["/", "Introduction"],
           ["/installation", "Installation"],
-          ["/should-you-use-venture", "Should you use Venture?"],
         ],
       },
       {
@@ -23,7 +22,15 @@ module.exports = {
           ["/usage/preparing-your-jobs", "Preparing your jobs"],
           ["/usage/configuring-workflows", "Configuring workflows"],
           ["/usage/keeping-track-of-workflows", "Keeping track of workflows"],
+          ["/usage/dealing-with-errors", "Dealing with errors"],
           ["/usage/caveats-and-limitations", "Caveats and limitations"],
+        ],
+      },
+      {
+        title: "Configuration",
+        collapsable: false,
+        children: [
+          ["/configuration/table-names", "Changing the table names"],
         ],
       },
     ],

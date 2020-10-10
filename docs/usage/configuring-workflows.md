@@ -1,5 +1,9 @@
 # Configuring Workflows
 
+[[toc]]
+
+## Create a new workflow builder
+
 Now you're ready to create your first workflow. To start, call the static `new` method on the `Workflow` class and give your workflow a name.
 
 ```php
@@ -42,7 +46,7 @@ The workflow we have configured so far would look like this.
 
 ![](/workflow-3.svg)
 
-From this point, you can simply keep adding jobs to the workflow and it will keep track all dependencies. All you need to do is to define a job's immediate dependencies.
+From this point, you can keep adding jobs to the workflow and it will keep track all dependencies. All you need to do is to define a job's direct dependencies.
 
 ```php
 Workflow::new('Publish new podcast')
@@ -66,6 +70,12 @@ Workflow::new('Publish new podcast')
 
 ![](/workflow-4.svg)
 
+::: tip Direct and transitive dependencies
+If we look at the diagram above, `TranslateAudioTranscription` has a _direct_ dependency on `CreateAudioTranscription`. `CreateAudioTranscription` in turn has a dependency on `ProccessPodcast`. This makes `ProcessPodcast` a _transitive_ dependency of `TranslateAudioTranscription` (think dependency of a dependency).
+
+Luckily, you don't have to worry about where exactly a job fits into a workflow. All you need to know is what a jobs _direct_ dependencies are and Venture will figure out the rest.
+:::
+
 ::: warning Note
 Since Venture is still in early development, there are few caveats for defining worklows. For example you can't have multiple instances of the same job within a workflow. Check the [Caveats and limiations](/usage/caveats-and-limitations) page for more information.
 :::
@@ -80,7 +90,7 @@ Workflow::start('Publish new podcast')
 ```
 
 ::: tip Tip
-If you plan on displaying the workflow jobs to your users, you pass in a translation string as the job name. This way you would be able to the localized name of the job in the UI.
+If you plan on displaying the workflow jobs to your users, you could pass in a translation string as the job name. This way you would be able to display the localized name of the job in the UI by using Laravel's built-in [localization features](https://laravel.com/docs/8.x/localization).
 :::
 
 ## Starting a workflow
@@ -95,7 +105,7 @@ $workflow = Workflow::new('Publish new podcast')
     ->start();
 ```
 
-The workflow will now figure out which jobs can be immediately dispatched–because they don't have any dependencies–and process them in parallel. Every time a job finishes, it will check if any of the job's _dependant_ jobs are now ready to run. If so, it will dispatch them.
+Venture will now figure out which jobs can be immediately dispatched–because they don't have any dependencies–and process them in parallel. Every time a job finishes, it will check if any of the job's _dependant_ jobs are now ready to run. If so, it will dispatch them.
 
 :::tip Dependant jobs and dependencies
 A _dependant_ job is a job that is waiting for another job to finish. In other words, if `JobB` needs `JobA` to finish before it can run, `JobB` is a dependant on `JobA`.
