@@ -44,7 +44,7 @@ module.exports = {
   themeConfig: {
     repo: "ksassnowski/venture",
     docsRepo: "ksassnowski/venture-docs",
-    logo: "logomark.svg",
+    logo: "/logomark.svg",
 
     sidebar: [
       {
