@@ -6,7 +6,7 @@
 
 ### Requirements
 
-Venture requires PHP 7.4 and Laravel 8.
+Venture requires PHP 7.4 and Laravel 7 or 8.
 
 ### Installing Venture
 
