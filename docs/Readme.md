@@ -1,5 +1,3 @@
-# Venture
-
 <div style="text-align: center">
     <img src="/logo.svg" />
 </div>
