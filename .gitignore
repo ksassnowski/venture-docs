@@ -1,2 +1,2 @@
 node_modules/
-docs/.vuepress/public/**/*.svg
+docs/.vuepress/public/**/workflow*.svg

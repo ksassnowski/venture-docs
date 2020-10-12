@@ -1,5 +1,9 @@
 # Venture
 
+<div style="text-align: center">
+    <img src="/logo.svg" />
+</div>
+
 Venture is a package to help you build and manage complex workflows of interdependent jobs using Laravel's queueing system.
 
 ```php
