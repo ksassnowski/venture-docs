@@ -6,7 +6,9 @@
 
 To explain how failed jobs affect a workflow let's take a look at the following example:
 
-![](/workflow-5.svg)
+<div style="text-align: center">
+    <img src="/workflow-5.svg" />
+</div>
 
 In the workflow above, `JobB` failed to execute successfully. This will prevent all jobs that have either a direct or transitive dependency on it to run. In this case, `JobB` failing will prevent `JobC` from executing, since it has a direct dependency on it.
 

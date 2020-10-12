@@ -44,7 +44,9 @@ In this example you're telling Venture that the `PublishPodcastOnTransistorFM` j
 
 The workflow we have configured so far would look like this.
 
-![](/workflow-3.svg)
+<div style="text-align: center;">
+    <img src="/workflow-3.svg" />
+</div>
 
 From this point, you can keep adding jobs to the workflow and it will keep track of all dependencies. All you need to do is to define a job's direct dependencies.
 
@@ -68,7 +70,9 @@ Workflow::new('Publish new podcast')
     ]);
 ```
 
-![](/workflow-4.svg)
+<div style="text-align: center;">
+    <img src="/workflow-4.svg" />
+</div>
 
 ::: tip Direct and transitive dependencies
 If we look at the diagram above, `TranslateAudioTranscription` has a _direct_ dependency on `CreateAudioTranscription`. `CreateAudioTranscription` in turn has a dependency on `ProccessPodcast`. This makes `ProcessPodcast` a _transitive_ dependency of `TranslateAudioTranscription` (think dependency of a dependency).
