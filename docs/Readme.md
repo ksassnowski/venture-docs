@@ -1,8 +1,11 @@
-<div style="text-align: center">
-    <img src="/logo.svg" />
-</div>
-
-Venture is a package to help you build and manage complex workflows of interdependent jobs using Laravel's queueing system.
+---
+home: true
+heroText: null
+tagline: Create and manage complex, async workflows in your Laravel application
+heroImage: /logo.svg
+actionText: Venture forth
+actionLink: /installation
+---
 
 ```php
 Workflow::new('Publish new podcast')
@@ -38,6 +41,14 @@ Workflow::new('Publish new podcast')
 
 This would create a workflow that looks like this:
 
-![](/workflow.svg)
+<div style="text-align: center">
+    <img src="/workflow.svg" />
+</div>
 
 The package will take care of running the jobs in the correct order--parallelizing jobs that don't have any interdependencies--and waiting for all dependencies of a job to be resolved before starting it. It also provides a way to inspect a workflow and each of its jobs.
+
+<div style="text-align:center; padding-bottom: 2rem;">
+    <a href="/installation.html" class="cta-button">
+        Read the Docs
+    </a>
+</div>
