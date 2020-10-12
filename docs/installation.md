@@ -40,29 +40,4 @@ To execute the migrations, run
 php artisan migrate
 ```
 
-### Registering the event subscriber
-
-Venture comes with an event subscriber that listens for finished jobs and checks if they are part of a workflow. If so, it will notify the corresponding workflow that one of its jobs has finished.
-
-To register the event subscriber, add it to the `$subscribe` array inside your application's `EventServiceProvider`.
-
-```php{10}
-<?php
-
-namespace App\Providers;
-
-use Sassnowski\Venture\WorkflowEventSubscriber;
-
-class EventServiceSubscriber extends ServiceProvider
-{
-    protected $subscribe = [
-        WorkflowEventSubscriber::class,
-    ];
-}
-```
-
-:::warning Important
-The event subscriber is critical for Venture to work properly, so don't forget to register it!
-:::
-
 That's all the setup necessary. Next, let's look at how we can get our jobs to work inside a workflow.
