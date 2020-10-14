@@ -46,6 +46,11 @@ module.exports = {
     docsRepo: "ksassnowski/venture-docs",
     logo: "/logo.svg",
 
+    algolia: {
+      apiKey: "aaf12df2ddf34696e87f6ae1f8e5cfe3",
+      indexName: "laravel_venture",
+    },
+
     sidebar: [
       {
         title: "Package",
