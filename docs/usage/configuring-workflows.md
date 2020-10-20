@@ -97,6 +97,26 @@ Workflow::start('Publish new podcast')
 If you plan on displaying the workflow jobs to your users, you could pass in a translation string as the job name. This way you would be able to display the localized name of the job in the UI by using Laravel's built-in [localization features](https://laravel.com/docs/8.x/localization).
 :::
 
+## Delaying a job
+
+If you don't want to immediately execute a job as soon as it can be run, you can define a delay for it. Laravel jobs already ship with this feature, so you could simply call the `delay` method on your job instance like this.
+
+```php{2}
+$workflow = Workflow::new('Publish new podcast')
+    ->addJob((new ProcessPodcast($podcast))->delay(now()->addDay()));
+```
+
+However, this can quickly become quite cluttered and difficult to read. For this reason, Venture allows you to pass in a `$delay` parameter to the `addJob` method.
+
+```php{2}
+$workflow = Workflow::new('Publish new podcast')
+    ->addJob(new ProcessPodcast($podcast), [], 'Process Podcast', now()->addDay());
+```
+
+::: warning NOTE
+Your job class needs to be using the `Illuminate\Bus\Queueable` trait to support this. For more information check Laravel's [documentation](https://laravel.com/docs/8.x/queues#delayed-dispatching) on the topic.
+:::
+
 ## Starting a workflow
 
 To start a workflow, call the `start` method once you have finished configuring it. This will return an instance of a `Workflow` model.
