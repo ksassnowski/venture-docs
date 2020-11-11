@@ -1,29 +1,44 @@
-# Configuring Workflows
+# Defining Workflows
 
 [[toc]]
 
-## Create a new workflow builder
+## Creating a workflow definition
 
-Now you're ready to create your first workflow. To start, call the static `new` method on the `Workflow` class and give your workflow a name.
+Now you're ready to create your first workflow. Workflows are defined as classes that extend from `AbstractWorkflow`. So to continue with our example of publishing a podcast, let's create a class called `PublishPodcastWorkflow`.
 
 ```php
-use Sassnowski\Venture;
+use App\Podcast;
+use Sassnowski\Venture\Facades\Workflow;
+use Sassnowski\Venture\AbstractWorkflow;
+use Sassnowski\Venture\WorkflowDefinition;
 
-Workflow::new('Publish new podcast');
+class PublishPodcastWorkflow extends AbstractWorkflow
+{
+    private Podcast $podcast;
+
+    public function __construct(Podcast $podcast)
+    {
+        $this->podcast = $podcast;
+    }
+
+    public function definition(): WorkflowDefinition
+    {
+        return Workflow::define('Publish new podcast')
+            ->addJob(new ProcessPodcast($this->podcast))
+            ->addJob(new OptimizePodcast($this->podcast));
+    }
+}
 ```
 
-When you later fetch a workflow from the database, you can retrieve its name via `$workflow->name`.
+The `define` method on the `Workflow` facades returns a new `WorkflowDefinition` with the provided name. The definition object can now be used to add jobs to the workflow.
 
 ## Adding jobs to a workflow
 
-In order to add a job to a workflow, use the `addJob` method on the workflow builder and pass an instance of a job to it.
+To add a job to a workflow, call the `addJob` method on the definition instance.
 
 ```php
-$podcast = Podcast::find(1);
-
-Workflow::new('Publish new podcast')
-    ->addJob(new ProcessPodcast($podcast))
-    ->addJob(new OptimizePodcast($podcast));
+Workflow::define('Publish new podcast')
+    ->addJob(new ProcessPodcast($this->podcast));
 ```
 
 ### Jobs with dependencies
@@ -31,7 +46,7 @@ Workflow::new('Publish new podcast')
 Venture really starts to shine once you start adding jobs that have dependencies. To define a job's dependencies, pass in an array of class names as the second parameter to the `addJob` method.
 
 ```php{4-7}
-Workflow::new('Publish new podcast')
+Workflow::define('Publish new podcast')
     ->addJob(new ProcessPodcast($podcast))
     ->addJob(new OptimizePodcast($podcast))
     ->addJob(new PublishPodcastOnTransistorFM($podcast), [
@@ -51,7 +66,7 @@ The workflow we have configured so far would look like this.
 From this point, you can keep adding jobs to the workflow and it will keep track of all dependencies. All you need to do is to define a job's direct dependencies.
 
 ```php
-Workflow::new('Publish new podcast')
+Workflow::define('Publish new podcast')
     ->addJob(new ProcessPodcast($podcast))
     ->addJob(new OptimizePodcast($podcast))
     ->addJob(new PublishPodcastOnTransistorFM($podcast), [
@@ -81,7 +96,7 @@ Luckily, you don't have to worry about how exactly a job fits into a workflow. A
 :::
 
 ::: warning Note
-Since Venture is still in early development, there are few caveats for defining worklows. For example you can't have multiple instances of the same job within a workflow. Check the [Caveats and limiations](/usage/caveats-and-limitations) page for more information.
+There are few caveats for defining worklows. For example you can't have multiple instances of the same job within a workflow. Check the [Caveats and limiations](/usage/caveats-and-limitations) page for more information.
 :::
 
 ### Naming jobs
@@ -89,7 +104,7 @@ Since Venture is still in early development, there are few caveats for defining 
 If you want, you can provide an optional name for a job that will be saved in the database. If not, the class name will be used.
 
 ```php
-Workflow::start('Publish new podcast')
+Workflow::define('Publish new podcast')
     ->addJob(new ProcessPodcast($podcast), [], 'Process podcast');
 ```
 
@@ -119,15 +134,15 @@ Your job class needs to be using the `Illuminate\Bus\Queueable` trait to support
 
 ## Starting a workflow
 
-To start a workflow, call the `start` method once you have finished configuring it. This will return an instance of a `Workflow` model.
+Now that we have defined our workflow, we can now start from somewhere within our application by calling its static `start` method.
 
-```php{5}
-$workflow = Workflow::new('Publish new podcast')
-    ->addJob(new ProcessPodcast($podcast))
-    ->addJob(new OptimizePodcast($podcast))
-    // ...
-    ->start();
+```php
+use App\Workflows\PublishPodcastWorkflow;
+
+PublishPodcastWorkflow::start($podcast);
 ```
+
+Any parameter you pass to the `start` method will be passed to the workflow's constructor.
 
 Venture will now figure out which jobs can be immediately dispatched–because they don't have any dependencies–and process them in parallel. Every time a job finishes, it will check if any of the job's _dependant_ jobs are now ready to be run. If so, it will dispatch them.
 
