@@ -57,6 +57,7 @@ module.exports = {
         collapsable: false,
         children: [
           ["/", "Introduction"],
+          ["/upgrade-guide", "Upgrade Guide"],
           ["/installation", "Installation"],
         ],
       },
