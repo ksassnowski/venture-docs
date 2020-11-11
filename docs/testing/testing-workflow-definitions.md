@@ -25,12 +25,15 @@ class PublishPodcastWorkflow extends AbstractWorkflow
 }
 ```
 
-This definition is pretty straight forward, it's straight up configuration. But now imagine your writing a podcasting platform that allows users to configure on which platforms they want to publish their podcasts. Now your definition might look something like this.
+This is a pretty straight forward workflow without any branches or conditions. Not having tests for this is probably fine.
+
+Now imagine that you're writing a podcasting platform that allows users to configure on which platforms they want to publish their podcasts. Now your definition might look something like this.
 
 ```php
 public function definition(): WorkflowDefinition
 {
-    $workflow = Workflow::define('Publish Podcast');
+    $workflow = Workflow::define('Publish Podcast')
+        ->addJob(new ProcessPodcast($this->podcast));
 
     if ($this->podcast->publish_on_apple_podcasts) {
         $workflow->addJob(new ReleaseOnApplePodcasts($this->podcast));
@@ -74,7 +77,7 @@ public function definition(): WorkflowDefinition
 }
 ```
 
-Again, this is something that you probably want to test to validate that the jobs get scheduled with the correct delay. It gets even more complicated if you combine these two things.
+Again, this is something that you probably want to test to validate that the jobs get scheduled with the correct delay. It gets even more complicated if you combine these two features.
 
 ```php
 public function definition(): WorkflowDefinition
@@ -103,10 +106,127 @@ public function definition(): WorkflowDefinition
 }
 ```
 
+I think you get the point by now but let's take it one step further to really drive the point home.
+
+Let's assume that podcast optimization is a paid feature on your platform. As such, you give users an option to enable or disable it on a per-podcast basis.
+
+This is a really interessting example because the dependency graph of your workflow actually changes depending on what the user selects. If podcast optimization is turned off, the `ReleaseOnTransistorFM` and `ReleaseOnApplePodcast` jobs should _not_ depend on the `OptimizePodcast` job (otherwise the workflow will throw an exception about an unresolvable dependency). In this case, they should depend on the `ProcessPodcast` job instead.
+
+```php
+public function definition(): WorkflowDefinition
+{
+    $workflow = Workflow::define('Publish Podcast')
+        ->addJob(new ProcessPodcast($this->podcast));
+
+    if ($this->podcast->optimization_enabled) {
+        $workflow->addJob(new OptimizePodcast($this->podcast), [
+            ProcessPodcast::class,
+        ]);
+    }
+
+    if ($this->podcast->release_on_apple_podcasts) {
+        $workflow->addJobWithDelay(
+            new ReleaseOnApplePodcasts($this->podcast),
+            $this->podcast->release_date,
+            $this->podcast->optimization_enabled
+                ? [OptimizePodcast::class]
+                : [ProcessPodcast::class]
+        );
+    }
+
+    if ($this->podcast->release_on_transistor) {
+      $workflow->addJobWithDelay(
+            new ReleaseOnTransitorFM($this->podcast),
+            $this->podcast->release_date,
+            $this->podcast->optimization_enabled
+                ? [OptimizePodcast::class]
+                : [ProcessPodcast::class]
+        );
+    }
+
+    return $workflow;
+}
+```
+
+This single workflow can now take on very different shapes depending on its input. For cases like these, Venture provides you with a few helper methods that allow you to check your workflow definitions for correctness.
+
 ## Inspecting Definitions
 
 ### Job exists
 
+To check that a workflow contains a specific job, you can call the `hasJob` method on your workflow definition. This will return a boolean to indicate if the given job is part of the workflow.
+
+```php
+$podcast = new Podcast(['optimization_enabled' => true]);
+$workflowDefinition = (new PublishPodcast($podcast))->definition();
+
+$actual = $workflowDefinition->hasJob(OptimizePodcast::class);
+
+$this->assertTrue($actual);
+```
+
 ### Job exists with dependencies
 
+You can also check if a job is part of the workflow and has the correct dependencies. To do this, you can use the `hasJobWithDependencies` method on the definition.
+
+```php
+$podcast = new Podcast([
+    'optimization_enabled' => true
+    'release_on_apple_podcasts' => true,
+]);
+$workflowDefinition = (new PublishPodcast($podcast))->definition();
+
+$actual = $workflowDefinition->hasJobWithDependencies(
+    ReleaseOnApplePodcasts::class,
+    [OptimizePodcast::class]
+);
+
+$this->assertTrue($actual);
+```
+
+::: warning Note
+`hasJobWithDependencies` checks for an **exact** match of the job's dependencies so be sure to provide all dependencies the job should have.
+:::
+
 ### Job exists with delay
+
+To verify that a job will be queued with the correct delay, you can use the `hasJobWithDelay` method on the workflow definition.
+
+```php
+Carbon::setTestNow(now());
+$podcast = new Podcast([
+    'release_date' => now()->addDay(),
+    'release_on_apple_podcasts' => true,
+]);
+$workflowDefinition = (new PublishPodcast($podcast))->definition();
+
+$actual = $workflowDefinition->hasJobWithDelay(
+    ReleaseOnApplePodcasts::class,
+    now()->addDay()
+);
+
+$this->assertTrue($actual);
+```
+
+### Checking for dependencies and delay
+
+There are two ways to check if a job has both the correct dependencies and the right delay. You can either write two separate assertions using `hasJobWithDependencies` and `hasJobWithDelay`, respectively. Or you can pass all three parameters to the `hasJob` method.
+
+```php
+// Two separate assertions
+$this->assertTrue($workflowDefinition->hasJobWithDependencies(
+    ReleaseOnApplePodcasts::class,
+    [OptimizePodcast::class]
+));
+$this->assertTrue($workflowDefinition->hasJobWithDelay(
+    ReleaseOnApplePodcasts::class,
+    $delay
+));
+
+// One assertion
+$this->assertTrue($workflowDefinition->hasJob(
+    ReleaseOnApplePodcasts::class,
+    [OptimizePodcast::class],
+    $delay
+));
+```
