@@ -20,17 +20,17 @@ If you do want a workflow to stop executing any further jobs, check the section 
 
 ## Handling failed steps
 
-Venture tries to provide a familiar API if you're used to Laravel's [queue batching feature](https://laravel.com/docs/8.x/queues#dispatching-batches). As such, you can register a `catch` callback when building your workflow.
+Venture tries to provide a familiar API if you're used to Laravel's [queue batching feature](https://laravel.com/docs/8.x/queues#dispatching-batches). As such, you can register a `catch` callback when defining your workflow.
 
 ```php
-Workflow::new('Register Podcast')
+Workflow::define('Register Podcast')
     ->addJob(...)
     ->catch(function (Workflow $workflow, $job, Throwable $e) {
         //
     });
 ```
 
-This callback will be called anytime one of the jobs in the workflow is marked as failed.
+This callback will be called any time one of the jobs in the workflow is marked as failed.
 
 ::: warning Watch out
 When designing your `catch` callback, be aware that it might be called multiple times if multiple jobs fail.
@@ -41,7 +41,7 @@ When designing your `catch` callback, be aware that it might be called multiple 
 You can mark a workflow as cancelled by calling its `cancel` method. This is usually going to happen inside the workflow's `catch` callback, but there's nothing stopping you from fetching a workflow from the database and calling its `cancel` function there. This can be useful if you want to display a _Cancel Workflow_ button in your UI for example.
 
 ```php{4}
-Workflow::new('Register Podcast')
+Workflow::define('Register Podcast')
     ->addJob(...)
     ->catch(function (Workflow $workflow, $job, Throwable $e) {
         $workflow->cancel();
