@@ -73,6 +73,21 @@ module.exports = {
         ],
       },
       {
+        title: "Testing",
+        collapsable: false,
+        children: [
+          ["/testing/introduction", "Introduction"],
+          [
+            "/testing/testing-workflow-definitions",
+            "Testing workflow definitions",
+          ],
+          [
+            "/testing/asserting-that-workflows-were-started",
+            "Asserting that a workflow was started",
+          ],
+        ],
+      },
+      {
         title: "Configuration",
         collapsable: false,
         children: [["/configuration/table-names", "Changing the table names"]],
