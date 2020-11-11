@@ -7,10 +7,7 @@
 All workflows and their individual steps get stored inside the database. When you start a workflow, an instance of the workflow will be returned.
 
 ```php
-$workflow = Workflow::new('Publish Podcast')
-    ->addJob(new ProcessPodcast($podcast))
-    // ...
-    ->start();
+$workflow = PublishPodcastWorkflow::start($podcast);
 ```
 
 ::: tip Note
@@ -21,16 +18,18 @@ By default, these tables are called `workflows` and `workflow_jobs`. This can be
 
 ## Performing an action after the workflow has finished
 
-Similar to how [batches work in Laravel](https://laravel.com/docs/8.x/queues#dispatching-batches), you can register a callback to execute after the workflow has finished. To do so, chain a `then` call before you start your workflow and pass in a closure.
+Similar to how [batches work in Laravel](https://laravel.com/docs/8.x/queues#dispatching-batches), you can register a callback to execute after the workflow has finished. To do so, call the `then` method on the `WorkflowDefinition` and pass in a closure.
 
 ```php
-Workflow::new('Example Workflow')
-    ->addJob(new ExampleJob())
-    ->then(function (Workflow $workflow) {
-        // This will get called once every job in the workflow has finished.
-        // It gets passed the workflow instance.
-    })
-    ->start();
+public function definition(): WorkflowDefinition
+{
+    return Workflow::define('Example Workflow')
+        ->addJob(new ExampleJob())
+        ->then(function (Workflow $workflow) {
+            // This will get called once every job in the workflow has finished.
+            // It gets passed the workflow instance.
+        });
+}
 ```
 
 Alternatively, you can pass an invokable class to the `then` callback.
@@ -44,10 +43,9 @@ class SendNotification
     }
 }
 
-Workflow::new('Example Workflow')
+Workflow::define('Example Workflow')
     ->addJob(new ExampleJob())
-    ->then(new SendNotification())
-    ->start();
+    ->then(new SendNotification());
 
 ```
 
