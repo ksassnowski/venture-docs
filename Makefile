@@ -9,3 +9,4 @@ diagrams: $(DOTSVG)
 
 clean:
 	rm docs/.vuepress/public/workflow*.svg
+	rm -rf docs/.vuepress/dist/
