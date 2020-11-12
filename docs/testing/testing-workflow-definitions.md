@@ -77,7 +77,7 @@ public function definition(): WorkflowDefinition
 }
 ```
 
-Again, this is something that you probably want to test to validate that the jobs get scheduled with the correct delay. It gets even more complicated if you combine these two features.
+In this example, you might want to test that `ReleaseOnTransistorFM` and `ReleaseOnApplePocasts` get scheduled with the correct delay. It gets even more complicated if you combine these two features.
 
 ```php
 public function definition(): WorkflowDefinition
@@ -128,6 +128,7 @@ public function definition(): WorkflowDefinition
         $workflow->addJobWithDelay(
             new ReleaseOnApplePodcasts($this->podcast),
             $this->podcast->release_date,
+            // Depend on different steps based on what was selected...
             $this->podcast->optimization_enabled
                 ? [OptimizePodcast::class]
                 : [ProcessPodcast::class]
@@ -138,6 +139,7 @@ public function definition(): WorkflowDefinition
       $workflow->addJobWithDelay(
             new ReleaseOnTransitorFM($this->podcast),
             $this->podcast->release_date,
+            // Depend on different steps based on what was selected...
             $this->podcast->optimization_enabled
                 ? [OptimizePodcast::class]
                 : [ProcessPodcast::class]
@@ -176,12 +178,12 @@ $podcast = new Podcast([
 ]);
 $workflowDefinition = (new PublishPodcast($podcast))->definition();
 
-$actual = $workflowDefinition->hasJobWithDependencies(
+$hasJob = $workflowDefinition->hasJobWithDependencies(
     ReleaseOnApplePodcasts::class,
     [OptimizePodcast::class]
 );
 
-$this->assertTrue($actual);
+$this->assertTrue($hasJob);
 ```
 
 ::: warning Note
@@ -200,12 +202,12 @@ $podcast = new Podcast([
 ]);
 $workflowDefinition = (new PublishPodcast($podcast))->definition();
 
-$actual = $workflowDefinition->hasJobWithDelay(
+$hasJobWithDelay = $workflowDefinition->hasJobWithDelay(
     ReleaseOnApplePodcasts::class,
     now()->addDay()
 );
 
-$this->assertTrue($actual);
+$this->assertTrue($hasJobWithDelay);
 ```
 
 ### Checking for dependencies and delay

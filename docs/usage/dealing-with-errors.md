@@ -4,15 +4,15 @@
 
 ## Failures inside a workflow
 
-To explain how failed jobs affect a workflow let's take a look at the following example:
+To explain how failed jobs affect a workflow, let's take a look at the following example:
 
 <div style="text-align: center">
     <img src="/workflow-5.svg" />
 </div>
 
-In the workflow above, `JobB` failed to execute successfully. This will prevent all jobs that have either a direct or transitive dependency on it to run. In this case, `JobB` failing will prevent `JobC` from executing, since it has a direct dependency on it.
+In the workflow above, `JobB` failed to execute successfully. This will prevent all jobs in that subtree of the workflow from running. In this case `JobB` failing will prevent `JobC`, `JobD` and `JobE` from executing, since each of them either has a direct dependency or transitive dependency on it.
 
-It will, however, _not_ affect the execution of `JobD` and `JobE` because neither of them have any dependency on `JobB`.
+It will, however, _not_ affect the execution of `JobF` and `JobG` because neither of them have any dependency on `JobB`.
 
 This is a powerful property of workflows as it makes them more robust and less all-or-nothing. Just because you failed to notify your subscribers about a new podcast does not mean that the job to generate a transcription should not be run.
 

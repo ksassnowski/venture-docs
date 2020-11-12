@@ -19,7 +19,7 @@ class MyJob
 }
 ```
 
-Doing so will enable the package to keep track of both the dependencies of a job as well as the job that are dependant on it. It also allows us keep track of the state of each step inside a workflow.
+Doing so will enable the package to keep track of both the dependencies of a job as well as the job that are dependant on it. It also allows us to keep track of the state of each step inside a workflow.
 
 ::: tip Tip
 If you get an error about calling an undefined method `withWorkflowId` on a job, you probably forgot to add the trait to your job.

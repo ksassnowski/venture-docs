@@ -6,9 +6,9 @@
 
 ### Workflows
 
-In 0.x versions, workflows were defined in an ad-hoc fashion. This meant that the place you defined a workflow usually was also the place you started them. As a consequence, workflows were almost impossible to re-use and test.
+In 0.x versions of Venture, workflows were defined in an ad-hoc fashion. This meant that the place you defined a workflow usually was also the place you started them. As a consequence, workflows were almost impossible to re-use and test.
 
-Version 1 of Venture fundamentally changed how workflows are defined. The _definition_ of a workflow was promoted to a first-class concept so we can reason about it separately from executing the workflow itself.
+Version 1 of Venture fundamentally changes how workflows are defined. Instead of defining and starting them inline, workflows are now defined in separate classes. Having a persistent workflow definition allows us to re-use them across our application. It also enables us to reason about them separately in our tests.
 
 #### Defining Workflows
 

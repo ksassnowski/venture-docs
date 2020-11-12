@@ -1,8 +1,13 @@
 digraph G {
     JobB [fillcolor = "#f95050", fontcolor = "white", style = "filled"]
+    JobC [fillcolor = "#ececec", fontcolor = "black", style = "filled"]
+    JobD [fillcolor = "#ececec", fontcolor = "black", style = "filled"]
+    JobE [fillcolor = "#ececec", fontcolor = "black", style = "filled"]
 
     JobA -> JobB;
-    JobA -> JobD;
+    JobA -> JobF;
+    JobF -> JobG;
     JobD -> JobE;
     JobB -> JobC;
+    JobB -> JobD;
 }

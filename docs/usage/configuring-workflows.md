@@ -4,7 +4,9 @@
 
 ## Creating a workflow definition
 
-Now you're ready to create your first workflow. Workflows are defined as classes that extend from `AbstractWorkflow`. So to continue with our example of publishing a podcast, let's create a class called `PublishPodcastWorkflow`.
+Now you're ready to create your first workflow. Workflows are defined as classes that extend from `AbstractWorkflow`. The `AbstractWorkflow` class defines an abstract method `definition` that you have to implement.
+
+To continue with our example of publishing a podcast, let's create a class called `PublishPodcastWorkflow`.
 
 ```php
 use App\Podcast;
@@ -40,6 +42,8 @@ To add a job to a workflow, call the `addJob` method on the definition instance.
 Workflow::define('Publish new podcast')
     ->addJob(new ProcessPodcast($this->podcast));
 ```
+
+Venture provides a fluent interface to define workflows, so you can simply keep chaining method calls to build up your workflow.
 
 ### Jobs with dependencies
 
@@ -92,7 +96,7 @@ Workflow::define('Publish new podcast')
 ::: tip Direct and transitive dependencies
 If we look at the diagram above, `TranslateAudioTranscription` has a _direct_ dependency on `CreateAudioTranscription`. `CreateAudioTranscription` in turn has a dependency on `ProccessPodcast`. This makes `ProcessPodcast` a _transitive_ dependency of `TranslateAudioTranscription` (think dependency of a dependency).
 
-Luckily, you don't have to worry about how exactly a job fits into a workflow. All you need to know is what a jobs _direct_ dependencies are and Venture will figure out the rest.
+Luckily, you don't have to worry about how exactly a job fits into a workflow. All you need to know is what other jobs a job is directly dependant on and Venture will figure out the rest.
 :::
 
 ::: warning Note
@@ -108,12 +112,20 @@ Workflow::define('Publish new podcast')
     ->addJob(new ProcessPodcast($podcast), [], 'Process podcast');
 ```
 
+You access a step's name via its `$name` property.
+
+```php
+$workflow->jobs[0]->name;
+// "Process podcast"
+```
+
 ::: tip Tip
 If you plan on displaying the workflow jobs to your users, you could pass in a translation string as the job name. This way you would be able to display the localized name of the job in the UI by using Laravel's built-in [localization features](https://laravel.com/docs/8.x/localization).
 :::
 
 ## Delaying a job
 
+<<<<<<< HEAD
 If you don't want to immediately execute a job as soon as it can be run, you can define a delay for it. Laravel jobs already ship with this feature, so you could simply call the `delay` method on your job instance like this.
 
 ```php{2}
@@ -121,11 +133,11 @@ $workflow = Workflow::new('Publish new podcast')
     ->addJob((new ProcessPodcast($podcast))->delay(now()->addDay()));
 ```
 
-However, this can quickly become quite cluttered and difficult to read. For this reason, Venture allows you to pass in a `$delay` parameter to the `addJob` method.
+However, this can quickly become quite cluttered and difficult to read. For this reason, Venture provides you with a `addJobWithDelay` method.
 
 ```php{2}
 $workflow = Workflow::new('Publish new podcast')
-    ->addJob(new ProcessPodcast($podcast), [], 'Process Podcast', now()->addDay());
+    ->addJobWithDelay(new ProcessPodcast($podcast), now()->addDays(2));
 ```
 
 ::: warning NOTE
@@ -134,7 +146,7 @@ Your job class needs to be using the `Illuminate\Bus\Queueable` trait to support
 
 ## Starting a workflow
 
-Now that we have defined our workflow, we can now start from somewhere within our application by calling its static `start` method.
+Now that we have defined our workflow, we can start it from somewhere within our application by calling its static `start` method.
 
 ```php
 use App\Workflows\PublishPodcastWorkflow;
@@ -144,7 +156,7 @@ PublishPodcastWorkflow::start($podcast);
 
 Any parameter you pass to the `start` method will be passed to the workflow's constructor.
 
-Venture will now figure out which jobs can be immediately dispatched–because they don't have any dependencies–and process them in parallel. Every time a job finishes, it will check if any of the job's _dependant_ jobs are now ready to be run. If so, it will dispatch them.
+Venture will now figure out which jobs can be immediately dispatched (because they don't have any dependencies) and process them in parallel. Every time a job finishes, it will check if any of the job's _dependant_ jobs are now ready to be run. If so, it will dispatch them.
 
 :::tip Dependant jobs and dependencies
 A _dependant_ job is a job that is waiting for another job to finish. In other words, if `JobB` needs `JobA` to finish before it can run, `JobB` is a dependant on `JobA`.

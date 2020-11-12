@@ -8,7 +8,7 @@ The package currently does not check for circular dependencies in your workflow.
 
 ## Duplicate Jobs
 
-It is currently not supported to have multiple instances of the same job inside a workflow. So something like this is not possible
+Because of how Venture keeps track of dependencies, it is currently not supported to have multiple instances of the same job inside a workflow. So something like this is not possible
 
 ```php
 Workflow::define('Example workflow')
