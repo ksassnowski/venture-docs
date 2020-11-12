@@ -125,7 +125,6 @@ If you plan on displaying the workflow jobs to your users, you could pass in a t
 
 ## Delaying a job
 
-<<<<<<< HEAD
 If you don't want to immediately execute a job as soon as it can be run, you can define a delay for it. Laravel jobs already ship with this feature, so you could simply call the `delay` method on your job instance like this.
 
 ```php{2}
