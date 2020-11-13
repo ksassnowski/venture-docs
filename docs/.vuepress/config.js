@@ -90,7 +90,13 @@ module.exports = {
       {
         title: "Configuration",
         collapsable: false,
-        children: [["/configuration/table-names", "Changing the table names"]],
+        children: [
+          ["/configuration/table-names", "Changing the table names"],
+          [
+            "/configuration/customizing-the-migrations",
+            "Customizing the migrations",
+          ],
+        ],
       },
     ],
   },
