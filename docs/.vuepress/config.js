@@ -88,6 +88,13 @@ module.exports = {
         ],
       },
       {
+        title: "Hooks",
+        collapsable: false,
+        children: [
+          ["/hooks/before-create", "Modifying workflows before they get saved"],
+        ],
+      },
+      {
         title: "Configuration",
         collapsable: false,
         children: [
