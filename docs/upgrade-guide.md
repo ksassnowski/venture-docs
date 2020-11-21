@@ -2,6 +2,35 @@
 
 [[toc]]
 
+## Migrating to 2.0 from 1.x
+
+### Migrations
+
+**Likelihood of Impact: High**
+
+A few more columns got added the `workflow_jobs`. As such you will have to run `php artisan migrate` again after upgrading.
+
+### Workflows
+
+#### Adding Jobs to Workflows
+
+**Likelihood of Impact: Medium**
+
+Previously, Venture allowed you to declare a dependency before that dependency had been added to the workflow. Doing so will now throw an `UnresolvableDependenciesException` instead. Make sure that before adding a job to a workflow all of its dependencies have been added already.
+
+```php
+Workflow::define('Workflow Name')
+    // This will now throw an exception because `Job1`
+    // has not been added to the workflow yet.
+    ->addJob(new Job2(), [Job1::class])
+    ->addJob(new Job1(), []);
+
+Workflow::define('Workflow Name')
+    ->addJob(new Job1(), [])
+    // This works since `Job1` has already been added.
+    ->addJob(new Job2(), [Job1::class]);
+```
+
 ## Migrating to 1.0 from 0.x
 
 ### Workflows
