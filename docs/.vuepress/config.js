@@ -67,6 +67,7 @@ module.exports = {
         children: [
           ["/usage/preparing-your-jobs", "Preparing your jobs"],
           ["/usage/configuring-workflows", "Configuring workflows"],
+          ["/usage/nesting-workflows", "Nesting workflows"],
           ["/usage/keeping-track-of-workflows", "Keeping track of workflows"],
           ["/usage/dealing-with-errors", "Dealing with errors"],
           ["/usage/caveats-and-limitations", "Caveats and limitations"],
