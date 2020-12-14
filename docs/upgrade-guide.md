@@ -31,6 +31,16 @@ Workflow::define('Workflow Name')
     ->addJob(new Job2(), [Job1::class]);
 ```
 
+#### Cannot add jobs without the `ShouldQueue` interface
+
+**Likelihood of Impact: Low**
+
+Venture requires all jobs inside a workflow to implement the `ShouldQueue` interface.
+Trying to add a job that doesn't implement this interface will now throw an `NonQueueableWorkflowStepException`.
+
+Check out the [relevant section](/usage/preparing-your-jobs#dealing-with-synchronous-jobs) in the documentation to learn how you can dispatch
+jobs synchrounously.
+
 ## Migrating to 1.0 from 0.x
 
 ### Workflows
