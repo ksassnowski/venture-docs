@@ -1,0 +1,11 @@
+digraph G {
+    ProcessPodcast;
+    ProcessPodcast -> EncodeAsMp3;
+    ProcessPodcast -> EncodeAsWav;
+
+    subgraph cluster_workflow {
+        EncodeAsMp3; EncodeAsWav;
+        label="EncodePodcastWorkflow";
+        graph[style="dotted", labelloc="b", fontsize="12", fontname="sans-serif"]
+    }
+}

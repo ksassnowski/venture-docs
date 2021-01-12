@@ -2,10 +2,6 @@
 
 There are a few limitations you should be aware of when designing your workflows.
 
-## Circular Dependencies
-
-The package currently does not check for circular dependencies in your workflow.
-
 ## Duplicate Jobs
 
 Because of how Venture keeps track of dependencies, it is currently not supported to have multiple instances of the same job inside a workflow. So something like this is not possible

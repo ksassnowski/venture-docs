@@ -1,0 +1,26 @@
+digraph G {
+    ProcessPodcast -> EncodeAsMp3;
+    ProcessPodcast -> EncodeAsWav;
+
+    subgraph cluster_publish {
+        label="PublishPodast-\nWorkflow";
+        graph[style="dotted", labelloc="t", labeljust="l", fontsize="12", fontname="sans-serif"]
+
+        PublishOnTransistorFM; PublishOnApplePodcasts NotifySubscribers;
+
+        PublishOnTransistorFM -> NotifySubscribers;
+        PublishOnApplePodcasts -> NotifySubscribers;
+    }
+
+    subgraph cluster_encode {
+        label="EncodePodcast-\nWorkflow";
+        graph[style="dotted", labeljust="l", labelloc="t", fontsize="12", fontname="sans-serif"]
+
+        EncodeAsWav; EncodeAsWav;
+
+        EncodeAsMp3 -> PublishOnApplePodcasts;
+        EncodeAsMp3 -> PublishOnTransistorFM;
+        EncodeAsWav -> PublishOnApplePodcasts;
+        EncodeAsWav -> PublishOnTransistorFM;
+    }
+}

@@ -1,0 +1,18 @@
+digraph G {
+    subgraph cluster_notify {
+        graph[style="invis"]
+        NotifySubscribers;
+    }
+
+    subgraph cluster_release {
+        label="ReleaseWorkflow";
+        graph[style="dotted", labelloc="t", labeljust="r", fontsize="12", fontname="sans-serif"]
+
+        ProcessPodcast; OptimizePodcast; ReleaseOnApplePodcasts; ReleaseOnTransistorFM;
+        ProcessPodcast -> OptimizePodcast;
+        OptimizePodcast -> ReleaseOnApplePodcasts;
+        OptimizePodcast -> ReleaseOnTransistorFM;
+        ReleaseOnTransistorFM -> NotifySubscribers;
+        ReleaseOnApplePodcasts -> NotifySubscribers;
+    }
+}
