@@ -58,7 +58,7 @@ class PodcastWorkflow extends AbstractWorkflow
 This brings up an interesting question. What exactly does it mean for a _workflow_ to depend on a job? This is easier to visualize than to describe in words, so here's what the resulting workflow will look like:
 
 <div style="text-align: center;">
-    <img src="/workflow-connect-workflow-with-job.svg" />
+    <img src="/connect-workflow-with-job.svg" />
 </div>
 
 Starting a workflow means starting all jobs that can be run in parallel. This is why Venture connected all root nodes of the nested workflow with the job.
