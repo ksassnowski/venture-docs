@@ -2,6 +2,84 @@
 
 [[toc]]
 
+## Migrating to 3.0 from 2.x
+
+### PHP Version
+
+**Likelihood of Impact: High**
+
+The new minimum PHP version is 8.0.
+
+### Removed `addJobWithDelay` method
+
+**Likelihood of Impact: Medium**
+
+The `addJobWithDelay` method has been removed from the `WorkflowDefinition` class. This method was meant as an alternative version to the `addJob` method with a different order of parameters. Since PHP 8 introduced named parameters, this method has become obsolete.
+
+Instead of doing something like this
+
+```php
+Workflow::define('Workflow name')
+    ->addJobWithDelay(new Job(), now()->addMinute());
+```
+
+we can now use this instead and get the same effect.
+
+```php
+Workflow::define('Workflow name')
+    ->addJob(new Job(), delay: now()->addMinute());
+```
+
+### Testing if workflow contains nested job
+
+**Likelihood of Impact: Medium**
+
+Venture provides an option to add a workflow to another workflow using the `addWorkflow` method on the `WorkflowDefinition` (try saying that fast three times). With Venture 3, jobs from a nested workflow now get prefixed internally with the name of the id of the workflow.
+
+This means that if you have written tests that check if a workflow contains a job from a nested workflow, you now have to add the prefix to your assertion.
+
+Here's an example. Assuming you have two workflows like this, where `InnerWorkflow` gets nested inside `OuterWorkflow`...
+
+```php
+class InnerWorkflow extends AbstractWorkflow
+{
+    public function definition(): WorkflowDefinition
+    {
+        return Workflow::define('Inner workflow')
+            ->addJob(new NestedJob1());
+    }
+}
+
+class OuterWorkflow extends AbstractWorkflow
+{
+    public function definition(): WorkflowDefinition
+    {
+        return Workflow::define('Outer workflow')
+            ->addWorkflow(new InnerWorkflow());
+    }
+}
+```
+
+...and a test for `InnerWorklfow` that checks that it contains the `NestedJob1` job.
+
+```php
+$workflowDefinition = (new OuterWorkflow())->definition();
+
+$this->assertTrue(
+    $workflowDefinition->hasJob(NestedJob1::class)
+);
+```
+
+This test would start failing in Venture 3 because the id of `NestedJob1` has been prefixed to `InnerWorkflow::class.NestedJob1::class`. We would have to update the test accordingly.
+
+```php
+$workflowDefinition = (new OuterWorkflow())->definition();
+
+$this->assertTrue(
+    $workflowDefinition->hasJob(InnerWorkflow::class . '.' . NestedJob1::class)
+);
+```
+
 ## Migrating to 2.0 from 1.x
 
 ### Migrations
