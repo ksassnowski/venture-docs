@@ -1,0 +1,7 @@
+digraph G {
+    EncodeMp3 [label="EncodePodcast (Mp3)"]
+    EncodeWav [label="EncodePodcast (Wav)"]
+
+    ProcessPodcast -> EncodeMp3
+    ProcessPodcast -> EncodeWav
+}

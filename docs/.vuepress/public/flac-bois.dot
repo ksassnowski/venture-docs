@@ -1,0 +1,10 @@
+digraph G {
+    EncodeMp3 [label="EncodePodcast (Mp3)"]
+    EncodeWav [label="EncodePodcast (Wav)"]
+    EncodeFlac [label="EncodePodcast (Flac)"]
+
+    ProcessPodcast -> EncodeMp3
+    ProcessPodcast -> EncodeWav
+    ProcessPodcast -> EncodeFlac
+    EncodeFlac -> NotifyAudiophileMailingList
+}

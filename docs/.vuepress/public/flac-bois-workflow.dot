@@ -1,0 +1,18 @@
+digraph G {
+    EncodeMp3 [label="EncodePodcast (Mp3)"]
+    EncodeWav [label="EncodePodcast (Wav)"]
+    EncodeFlac [label="EncodePodcast (Flac)"]
+
+    subgraph cluster_notify {
+        graph[style="invis"]
+        ProcessPodcast -> EncodeMp3
+        ProcessPodcast -> EncodeWav
+    }
+
+    subgraph cluster_flac {
+        label="FlacPodcastWorkflow";
+        graph[style="dotted", labelloc="t", labeljust="r", fontsize="12", fontname="sans-serif"]
+        ProcessPodcast -> EncodeFlac
+        EncodeFlac -> NotifyAudiophileMailingList
+    }
+}
