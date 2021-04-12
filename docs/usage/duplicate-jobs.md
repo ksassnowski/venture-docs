@@ -104,7 +104,7 @@ class FlacPodcastWorkflow extends AbstractWorkflow
         return Workflow::define('Flac Workflow')
             ->addJob(new EncodePodcast('flac', $this->podcast))
             ->addJob(
-                new NotifiyAudiophileMailingList($this->podcast),
+                new NotifyAudiophileMailingList($this->podcast),
                 dependencies: [EncodePodcast::class],
             );
     }
