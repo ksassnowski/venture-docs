@@ -232,3 +232,28 @@ $this->assertTrue($workflowDefinition->hasJob(
     $delay
 ));
 ```
+
+### Workflow exists
+
+To check that a workflow contains a nested workflow, you can use the `hasWorkflow` method on the workflow definition object.
+
+```php
+$this->assertTrue($workflowDefinition->hasWorkflow(
+    EncodePodcastWorkflow::class,
+    [ProcessPodcast::class]
+));
+```
+
+This would check that the workflow definition contains a nested `EncodePodcastWorkflow` that depends on the `ProcessPodcast` job. If you don't care about the dependencies, you can leave out the second paramater (or pass `null`).
+
+```php
+// Just want to know that EncodePodcastWorkflow exists.
+// We don't care about its dependencies.
+$this->assertTrue($workflowDefinition->hasWorkflow(
+    EncodePodcastWorkflow::class,
+));
+```
+
+::: warning Note
+`hasWorkflow` does **not** work recursively, meaning it will always return `false` when checking for a workflow that is part of another nested workflow. You shouldn't test the internals of your dependencies. Instead, write another test for `EncodePodcastWorkflow` and check for the nested workflow there.
+:::
