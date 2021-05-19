@@ -37,7 +37,7 @@ Alternatively, you can pass an invokable class to the `then` callback.
 ```php
 class SendNotification
 {
-    public function __invokable(Workflow $workflow)
+    public function __invoke(Workflow $workflow)
     {
         // Do something with the workflow...
     }
