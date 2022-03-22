@@ -71,4 +71,7 @@ $workflow->isFinished();
 
 // Indicates if the workflow has been cancelled...
 $workflow->isCancelled();
+
+// Indicates if the workflow has been executed...
+$workflow->hasRan();
 ```
