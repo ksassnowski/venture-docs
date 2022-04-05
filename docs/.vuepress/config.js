@@ -104,6 +104,7 @@ module.exports = {
             "/configuration/customizing-the-migrations",
             "Customizing the migrations",
           ],
+          ["/configuration/customizing-models", "Customizing models"],
         ],
       },
     ],
