@@ -9,16 +9,13 @@ You might wonder why testing workflows definitions is necessary at all. Aren't t
 ```php
 class PublishPodcastWorkflow extends AbstractWorkflow
 {
-    private Podcast $podcast;
-
-    public function __construct(Podcast $podcast)
+    public function __construct(private Podcast $podcast)
     {
-        $this->podcast = $podcast;
     }
 
     public function definition(): WorkflowDefinition
     {
-        return Workflow::define('Publish Podcast')
+        return $this->define('Publish Podcast')
             ->addJob(new ReleaseOnTransistorFM($this->podcast))
             ->addJob(new ReleaseOnApplePodcasts($this->podcast));
     }
@@ -32,7 +29,7 @@ Now imagine that you're writing a podcasting platform that allows users to confi
 ```php
 public function definition(): WorkflowDefinition
 {
-    $workflow = Workflow::define('Publish Podcast')
+    $workflow = $this->define('Publish Podcast')
         ->addJob(new ProcessPodcast($this->podcast));
 
     if ($this->podcast->publish_on_apple_podcasts) {
@@ -61,7 +58,7 @@ Another example could be to schedule the release of the podcast ahead of time, b
 ```php
 public function definition(): WorkflowDefinition
 {
-    return Workflow::define('Publish Podcast')
+    return $this->define('Publish Podcast')
         ->addJob(new ProcessPodcast($this->podcast))
         ->addJob(new OptimizePodcast($this->podcast), [ProcessPodcast::class])
         ->addJobWithDelay(
@@ -82,7 +79,7 @@ In this example, you might want to test that `ReleaseOnTransistorFM` and `Releas
 ```php
 public function definition(): WorkflowDefinition
 {
-    $workflow = Workflow::define('Publish Podcast')
+    $workflow = $this->define('Publish Podcast')
         ->addJob(new ProcessPodcast($this->podcast))
         ->addJob(new OptimizePodcast($this->podcast), [ProcessPodcast::class]);
 
@@ -115,7 +112,7 @@ This is a really interessting example because the dependency graph of your workf
 ```php
 public function definition(): WorkflowDefinition
 {
-    $workflow = Workflow::define('Publish Podcast')
+    $workflow = $this->define('Publish Podcast')
         ->addJob(new ProcessPodcast($this->podcast));
 
     if ($this->podcast->optimization_enabled) {

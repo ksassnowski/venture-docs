@@ -4,9 +4,23 @@
 
 ## Overview
 
-To enable our jobs to run inside a workflow, we only need do two things. First, make sure that your job is implementing the `ShouldQueue` interface that comes with Laravel. Check the [section below](#dealing-with-synchronous-jobs) to learn how to include synchronous jobs in your workflows.
+Any job you want to add to a workflow needs to implement `WorkflowStepInterface`. 
 
-Next, we need to use the `WorkflowStep` trait that comes with Venture.
+```php{5,7}
+<?php
+    
+namespace App\Jobs;
+
+use Sassnowski\Venture\WorkflowStepInterface;
+
+class MyJob implements WorkflowStepInterface
+{
+}
+```
+
+This interface defines quite a few methods that Venture uses internally to configure your jobs. If you are interested in the specifics, you can check out the interface [on GitHub](https://github.com/ksassnowski/venture/tree/master/src/WorkflowStepInterface.php).
+
+Luckily for us, Venture also comes with a handy `WorkflowStep` trait which automatically implements this interface for you.
 
 ```php{5,10}
 <?php
@@ -14,42 +28,52 @@ Next, we need to use the `WorkflowStep` trait that comes with Venture.
 namespace App\Jobs;
 
 use Sassnowski\Venture\WorkflowStep;
-use Illuminate\Contracts\Queue\ShouldQueue;
+use Sassnowski\Venture\WorkflowStepInterface;
 
-class MyJob implements ShouldQueue
+class MyJob implements WorkflowStepInterface
 {
     use WorkflowStep;
 }
 ```
 
-Doing so will enable the package to keep track of both the dependencies of a job as well as the job that are dependant on it. It also allows us to keep track of the state of each step inside a workflow.
+This trait automatically includes Laravel’s `Queueable` trait behind the scenes. So if you’ve previously added the `Queuable` trait to your jobs manually, you can safely remove it.
 
-::: tip Tip
-If you get an error about calling an undefined method `withWorkflowId` on a job, you probably forgot to add the trait to your job.
-:::
-
-That's it. Your job is now able to be used inside a workflow. Let's look at how to configure a workflow next.
-
-## Dealing with synchronous jobs
-
-Venture requries all jobs in a workflow to implement the `ShouldQueue` interface. This is because Venture relies on the events that are fired by Laravel's queue system.
-
-There might still be cases where you want a job to run synchronously, however. In these cases you should explicitly set the jobs `connection` to `sync`. You can do this in two ways.
-
-Either set the jobs `$connection` parameter to `sync` from within the job's constructor...
-
-```php{15}
+```diff
 <?php
 
 namespace App\Jobs;
 
-use Illuminate\Bus\Queueable;
+- use Illuminate\Bus\Queueable;
 use Sassnowski\Venture\WorkflowStep;
-use Illuminate\Contracts\Queue\ShouldQueue;
+use Sassnowski\Venture\WorkflowStepInterface;
 
-class MyJob implements ShouldQueue
+class MyJob implements WorkflowStepInterface
 {
-    use WorkflowStep, Queueable;
+    use WorkflowStep;
+-   use Queueable;
+}
+```
+
+That's it. Your job is now able to be used inside a workflow. Venture will now automatically keep track of this job’s dependencies as well as the jobs that are dependent on it.
+
+## Dealing with synchronous jobs
+
+All jobs in a workflow will be dispatched via Laravel’s queue system. This is because the  `WorkflowStepInterface` extends Laravel’s `ShouldQueue` interface behind the scenes.
+
+There might still be cases where you want a job to run synchronously, however. In these cases you should explicitly set the jobs `connection` to `sync`. You can do this in one of two ways.
+
+You can either set the job’s `$connection` parameter to `sync` from within the job's constructor:
+
+```php{13}
+<?php
+
+namespace App\Jobs;
+
+use Sassnowski\Venture\WorkflowStep;
+
+class MyJob implements WorkflowStepInterface
+{
+    use WorkflowStep;
 
     public function __construct()
     {
@@ -58,13 +82,19 @@ class MyJob implements ShouldQueue
 }
 ```
 
-... or by calling the `onConnection` method when creating the job instance.
+Alternatively, you can call the `withConnection` method when creating the job instance.
 
 ```php{2}
-Workflow::define('My workflow')
-    ->addJob((new MyJob())->onConnection('sync'));
+$this->define('My workflow')
+    ->addJob((new MyJob())->withConnection('sync'));
 ```
 
-::: warning Note
-Be aware that for this to work your job needs to use the `Illuminate\Bus\Queueable` trait.
-:::
+You can also set the connections for all jobs in a workflow at once by calling `allOnConnection` on the definition itself.
+
+```php{2}
+$this->define('My workflow')
+    ->allOnConnection('sync')
+    ->addJob(new MyJob());
+```
+
+Note that doing so will override whatever connection you have defined inside your job classes.

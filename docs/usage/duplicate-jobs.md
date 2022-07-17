@@ -15,7 +15,7 @@ It can often be useful to have multiple instances of the same job to a workflow.
 When adding more than one instance of the same job to a workflow, you need to provide an explicit id for each of these jobs. You can do this by passing the `id` parameter to the workflow's `addJob' method.
 
 ```php
-Workflow::define('Publish podcast')
+$this->define('Publish podcast')
     ->addJob(new ProcessPodcast($this->podcast))
     ->addJob(
         new EncodePodcast('mp3', $this->podcast),
@@ -32,7 +32,7 @@ Workflow::define('Publish podcast')
 These ids have to be unique only within the workflow definition. Venture will throw a `DuplicateJobException` when you try adding a job with an id that already exists in the workflow.
 
 ```php
-Workflow::define('Publish podcast')
+$this->define('Publish podcast')
     ->addJob(new ProcessPodcast($this->podcast))
     ->addJob(
         new EncodePodcast('mp3', $this->podcast),
@@ -61,7 +61,7 @@ Things become more interesting when some branch of your workflow depends on only
 In this case, we don't want to depend _only_ on the job that encodes our podcast as flac. Since we have to provide explicit ids for all `EncodePodcast` job anyways, this becomes a cinch. All we have to do is provide the id of the job as the dependency.
 
 ```php
-Workflow::define('Publish podcast')
+$this->define('Publish podcast')
     ->addJob(new ProcessPodcast($this->podcast))
     ->addJob(
         new EncodePodcast('mp3', $this->podcast),
@@ -85,7 +85,7 @@ Workflow::define('Publish podcast')
 ```
 
 ::: tip Note
-Venture always depends on the id of a job internally, even if you don't explicitly provide one. In these cases, the FCQN of the class will be used as the id. So this really isn't any different than depending on regular, non-duplicate job. All we changed is that we provided an explicit id ourselves.
+Venture always depends on the id of a job internally, even if you don't explicitly provide one. In these cases, the fully qualified name (or **FQCN** for short) of the class will be used as the id. This means that this really isn't any different than depending on regular, non-duplicate job.
 :::
 
 ## Duplicate jobs in nested workflows
@@ -101,7 +101,7 @@ class FlacPodcastWorkflow extends AbstractWorkflow
 
     public function definition(): WorkflowDefinition
     {
-        return Workflow::define('Flac Workflow')
+        return $this->define('Flac Workflow')
             ->addJob(new EncodePodcast('flac', $this->podcast))
             ->addJob(
                 new NotifyAudiophileMailingList($this->podcast),
@@ -114,7 +114,7 @@ class FlacPodcastWorkflow extends AbstractWorkflow
 Note how we didn't need provide an explicit id for the `EncodePodcast` job because it's the only one of its kind in this workflow. We can still embed this workflow inside another workflow that also contains `EncodePodcast` jobs.
 
 ```php
-Workflow::define('Publish podcast')
+$this->define('Publish podcast')
     ->addJob(new ProcessPodcast($this->podcast))
     ->addJob(
         new EncodePodcast('mp3', $this->podcast),
@@ -141,7 +141,7 @@ The above example would produce a workflow like this.
 </div>
 
 :::danger Note
-While it is technically possible to depend on a job from a nested workflow, you should always depend on the **workflow** instead. Depending on a job inside a workflow not only breaks encapsulation, it could potentially change the structure of the workflow.
+While it is technically possible to directly depend on a job from a nested workflow, you should always depend on the **workflow** instead. Depending on a job inside a nested workflow not only breaks encapsulation, it could potentially change the structure of the workflow.
 
-If you find yourself continuously needing to depend on a nested job, it might be a sign that you extract this dependency into its own workflow.
+If you find yourself continuously needing to depend on a nested job, it might be a sign that you should extract this dependency into its own workflow.
 :::

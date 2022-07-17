@@ -1,6 +1,63 @@
 # Upgrade Guide
 
-[[toc]]
+## Migrating to 4.0 from 3.x
+
+### Laravel Version
+
+**Likelihood of Impact: High**
+
+Starting with version 4.0, Venture requires Laravel 9.
+
+### Jobs need to implement `WorkflowStepInterface`
+
+**Likelihood of Impact: Very High**
+
+Up until now, workflow jobs only had to use the `WorkflowStep` trait in order to use them as part of a workflow. Venture 4 introduces a `WorkflowStepInterface` that all jobs need to implement.
+
+The `WorkflowStep` trait automatically implements `WorkflowStepInterface`. This means all you will have to do is add the interface to your job’s class declaration.
+
+```diff
+use Sassnowski\Venture\WorkflowStep;
++ use Sassnowski\Venture\WorkflowStepInterface;
+
+- class MyJob
++ class MyJob implements WorkflowStepInterface
+{
+	use WorkflowStep;
+}
+```
+
+### `WorkflowDefinition` requires an `AbstractWorkflow` instance
+
+**Likelihood of Impact: Very High**
+
+The `WorkflowDefinition` constructor now expects an instance of `AbstractWorkflow` as its first parameter. Up until version 4, it only expected the workflow’s name.
+
+This change will most likely affect all jobs as the `Workflow` facade’s `define` method was also updated accordingly. When calling the `define` method, you should now pass `$this` as the first parameter.
+
+```diff
+class PublishPodcastWorkflow implements AbstractWorkflow
+{
+	public function definition(): WorkflowDefinition
+	{
+-		return Workflow::define('Publish podcast');
++		return Workflow::define($this, 'Publish podcast');
+	}
+}
+```
+
+As a convenience, a new `define` method was added to the `AbstractWorkflow` class that automatically passes the current workflow instance to the `WorkflowDefinition`’s constructor. This means that in most cases, you should be able to perform a simple find/replace on your codebase to update your jobs.
+
+```diff
+class PublishPodcastWorkflow implements AbstractWorkflow
+{
+	public function definition(): WorkflowDefinition
+	{
+-		return Workflow::define('Publish podcast');
++		return $this->define('Publish podcast');
+	}
+}
+```
 
 ## Migrating to 3.0 from 2.x
 

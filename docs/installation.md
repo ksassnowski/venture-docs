@@ -1,22 +1,22 @@
 # Installation
 
-[[toc]]
+This section will help you get started with installing Venture into your project.
 
-## Installation
+## Step 1: Installation
 
 ### Requirements
 
-Venture requires PHP 8 and Laravel 7 or 8.
+Venture requires PHP 8 and Laravel 9.
 
 ### Installing Venture
 
 You can install Venture through composer
 
 ```bash
-composer require sassnowski/venture
+$ composer require sassnowski/venture
 ```
 
-## Preparing the application
+## Step 2: Preparing the application
 
 After installing Venture, there are a few things we need to do to prepare our application.
 

@@ -23,7 +23,7 @@ Similar to how [batches work in Laravel](https://laravel.com/docs/8.x/queues#dis
 ```php
 public function definition(): WorkflowDefinition
 {
-    return Workflow::define('Example Workflow')
+    return $this->define('Example Workflow')
         ->addJob(new ExampleJob())
         ->then(function (Workflow $workflow) {
             // This will get called once every job in the workflow has finished.
@@ -43,7 +43,7 @@ class SendNotification
     }
 }
 
-Workflow::define('Example Workflow')
+$this->define('Example Workflow')
     ->addJob(new ExampleJob())
     ->then(new SendNotification());
 

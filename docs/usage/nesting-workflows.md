@@ -23,7 +23,7 @@ class PublishPodcastWorkflow extends AbstractWorkflow
 {
     public function definition(): WorkflowDefinition
     {
-        return Workflow::define('Publish Podcast')
+        return $this->define('Publish Podcast')
             ->addWorkflow(new OptimizePodcastWorkflow($this->podcast));
     }
 }
@@ -46,7 +46,7 @@ class PodcastWorkflow extends AbstractWorkflow
 {
     public function definition(): WorkflowDefinition
     {
-        return Workflow::define('Podcast Workflow')
+        return $this->define('Podcast Workflow')
             ->addJob(new ProcessPodcast($this->podcast))
             ->addWorkflow(new EncodePodcastWorkflow($this->podcast), [
                 ProcessPodcast::class,
@@ -84,7 +84,7 @@ class PodcastWorkflow extends AbstractWorkflow
 {
     public function definition(): WorkflowDefinition
     {
-        return Workflow::define('Podcast Workflow')
+        return $this->define('Podcast Workflow')
             ->addWorkflow(new ReleasePodcast($this->podcast))
             ->addJob(new NotifySubscribers($this->podcast), [
                 ReleasePodcast::class,
@@ -118,7 +118,7 @@ class PodcastWorkflow extends AbstractWorkflow
 {
     public function definition(): WorkflowDefinition
     {
-        return Workflow::define('Podcast Workflow')
+        return $this->define('Podcast Workflow')
             ->addJob(new ProcessPodcast($this->podcast))
             ->addWorkflow(new EncodePodcastWorkflow($this->podcast), [
                 ProcessPodcast::class,
