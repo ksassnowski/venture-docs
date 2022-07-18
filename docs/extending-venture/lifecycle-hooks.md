@@ -1,7 +1,5 @@
 # Workflow lifecycle hooks
 
-[[toc]]
-
 ## The `beforeCreate` hook
 
 Sometimes you may want to modify a workflow before it gets saved to the database for the first time. To do so, you may implement the `beforeCreate` method on your workflow class.

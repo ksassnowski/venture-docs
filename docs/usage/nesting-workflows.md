@@ -1,9 +1,5 @@
 # Nesting Workflows
 
-[[toc]]
-
-## Overview
-
 As your application grows, you might want to extract a subset of jobs into a separate workflow so that you can re-use them inside other workflows. Just like you can add individual jobs, you can embed an entire other workflow inside your workflow.
 
 ## Adding a nested workflow

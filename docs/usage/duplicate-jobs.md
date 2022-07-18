@@ -1,10 +1,6 @@
 # Duplicate Jobs
 
-[[toc]]
-
-## Overview
-
-It can often be useful to have multiple instances of the same job to a workflow. For example, you might want to encode your podcasts as both mp3 and wav. You could add a `EncodePodcast` job to your workflow which takes the target output format as a parameter and have them run in parallel.
+It can often be useful to have multiple instances of the same job to a workflow. For example, you might want to encode your podcasts as both mp3 and wav. You could add an `EncodePodcast` job to your workflow which takes the target output format as a parameter and have them run in parallel.
 
 <div style="text-align: center;">
     <img src="/multiple-jobs.svg" />
@@ -12,7 +8,7 @@ It can often be useful to have multiple instances of the same job to a workflow.
 
 ## Adding multiple instances of the same job
 
-When adding more than one instance of the same job to a workflow, you need to provide an explicit id for each of these jobs. You can do this by passing the `id` parameter to the workflow's `addJob' method.
+When adding more than one instance of the same job to a workflow, you need to provide an explicit id for each of these jobs. You can do this by providing the `id` parameter when adding a job.
 
 ```php
 $this->define('Publish podcast')
@@ -58,7 +54,7 @@ Things become more interesting when some branch of your workflow depends on only
     <img src="/flac-bois.svg" />
 </div>
 
-In this case, we don't want to depend _only_ on the job that encodes our podcast as flac. Since we have to provide explicit ids for all `EncodePodcast` job anyways, this becomes a cinch. All we have to do is provide the id of the job as the dependency.
+In this case, we want to depend _only_ on the job that encodes our podcast as flac. Since we have to provide explicit ids for all `EncodePodcast` job anyways, this becomes a cinch. All we have to do is provide the id of the job as the dependency.
 
 ```php
 $this->define('Publish podcast')

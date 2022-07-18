@@ -143,6 +143,10 @@ export default {
             link: "/configuration/customizing-models",
             text: "Customizing models",
           },
+          {
+            link: "/configuration/customizing-model-states",
+            text: "Customizing model states",
+          },
         ],
       },
     ],
