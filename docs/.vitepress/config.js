@@ -115,15 +115,11 @@ export default {
           { link: "/testing/introduction", text: "Introduction" },
           {
             link: "/testing/testing-workflow-definitions",
-            text: "Testing workflow definitions",
+            text: "Testing workflows",
           },
           {
             link: "/testing/asserting-that-workflows-were-started",
             text: "Asserting that a workflow was started",
-          },
-          {
-            link: "/testing/workflow-callbacks",
-            text: "Testing a workflow callbacks",
           },
         ],
       },

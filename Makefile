@@ -1,4 +1,4 @@
-DOT_FILES=$(wildcard docs/.vuepress/public/*.dot)
+DOT_FILES=$(wildcard docs/public/*.dot)
 DOTSVG=$(DOT_FILES:.dot=.svg)
 
 %.svg: %.dot
@@ -8,5 +8,4 @@ DOTSVG=$(DOT_FILES:.dot=.svg)
 diagrams: $(DOTSVG)
 
 clean:
-	rm docs/.vuepress/public/workflow*.svg
-	rm -rf docs/.vuepress/dist/
+	rm docs/public/workflow*.svg

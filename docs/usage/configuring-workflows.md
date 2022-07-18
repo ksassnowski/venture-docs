@@ -55,9 +55,9 @@ To define a job's dependencies, you may pass in an array of class names as the s
 
 ```php{4-7}
 $this->define('Publish new podcast')
-    ->addJob(new ProcessPodcast($podcast))
-    ->addJob(new OptimizePodcast($podcast))
-    ->addJob(new PublishPodcastOnTransistorFM($podcast), [
+    ->addJob(new ProcessPodcast($this->podcast))
+    ->addJob(new OptimizePodcast($this->podcast))
+    ->addJob(new PublishPodcastOnTransistorFM($this->podcast), [
         ProcessPodcast::class,
         OptimizePodcast::class
     ]);
@@ -75,20 +75,20 @@ From this point, you can keep adding jobs to the workflow and it will keep track
 
 ```php
 $this->define('Publish new podcast')
-    ->addJob(new ProcessPodcast($podcast))
-    ->addJob(new OptimizePodcast($podcast))
-    ->addJob(new PublishPodcastOnTransistorFM($podcast), [
+    ->addJob(new ProcessPodcast($this->podcast))
+    ->addJob(new OptimizePodcast($this->podcast))
+    ->addJob(new PublishPodcastOnTransistorFM($this->podcast), [
         ProcessPodcast::class,
         OptimizePodcast::class
     ])
-    ->addJob(new PublishPodcastOnApplePodcasts($podcast), [
+    ->addJob(new PublishPodcastOnApplePodcasts($this->podcast), [
         ProcessPodcast::class,
         OptimizePodcast::class
     ])
-    ->addJob(new CreateAudioTranscription($podcast), [
+    ->addJob(new CreateAudioTranscription($this->podcast), [
         ProcessPodcast::class,
     ])
-    ->addJob(new TranslateAudioTranscription($podcast), [
+    ->addJob(new TranslateAudioTranscription($this->podcast), [
         CreateAudioTranscription::class,
     ]);
 ```
@@ -114,7 +114,7 @@ If you want, you can provide an optional name for a job that will be saved in th
 
 ```php
 $this->define('Publish new podcast')
-    ->addJob(new ProcessPodcast($podcast), [], 'Process podcast');
+    ->addJob(new ProcessPodcast($this->podcast), [], 'Process podcast');
 ```
 
 If no explicit name is provided, the fully qualified class name (**FQCN**) of the job will be used instead.
@@ -203,10 +203,33 @@ If you don't want to immediately execute a job as soon as it can be run, you can
 
 ```php
 $this->define('Publish new podcast')
-    ->addJob((new ProcessPodcast($podcast))->delay(now()->addDay()));
+    ->addJob(
+    	(new ProcessPodcast($this->podcast))->delay(now()->addDay())
+	);
 ```
 
 This Laravel’s built-in delayed dispatching feature. For more information check Laravel's [documentation](https://laravel.com/docs/9.x/queues#delayed-dispatching) on the topic.
+
+You can also pass the delay as the fourth parameter to the `addJob` method. In this case, it may be helpful to use named parameters to avoid having to pass the intermediate arguments.
+
+```php
+$this->define('Publish new podcast')
+    ->addJob(
+    	new ProcessPodcast($this->podcast), 
+    	[],
+    	null, 
+    	now()->addDay(),
+	);
+
+// Or, using named parameters
+$this->define('Publish new podcast')
+    ->addJob(
+    	new ProcessPodcast($this->podcast), 
+    	delay: now()->addDay(),
+	);
+```
+
+
 
 ## Conditional Jobs
 
@@ -257,13 +280,9 @@ return $this->define('Publish Podcast')
       });
 ```
 
-The example above produces two possible workflows. If the user is a pro user, the resulting workflow looks like this:
+The example above produces two possible workflows. One if the user is a pro user and if the user isn’t a pro user.
 
-**insert graph**
-
-If the user isn’t a pro user, the workflow looks like this instead:
-
-**insert graph**
+![](/workflow-conditional-jobs.svg)
 
 ### Depending on conditional jobs
 
@@ -291,7 +310,7 @@ return $this->define('Publish Podcast')
 	          )
             ->addJob(new SendUpsellingEmail($this->user));
       })
-  		->addJob(
+      ->addJob(
           new PublishOnTransistorFM($this->podcast),
           [
               ConditionalDependency::whenDefined(
@@ -312,7 +331,7 @@ Conditional dependencies can be combined with regular dependencies, too.
 
 ```php
 $this->define('Publish Podcast')
-			// ...
+	// ...
     ->addJob(
         new PublishOnTransistorFM($this->podcast),
             [
@@ -327,7 +346,9 @@ $this->define('Publish Podcast')
 
 You can also leave out the second parameter to the `whenDefined` method. In this case, the dependency will be completely removed from the job if no corresponding job exists in the workflow. If that leaves a job without any dependencies, it will be dispatched immediately after the workflow starts.
 
-## Queue connection of jobs
+## Defining the queue for jobs
+
+## Defining the connection for jobs
 
 Since workflow jobs are just regular Laravel jobs, you have multiple options of specifying the queue connection for each job.
 
@@ -391,8 +412,130 @@ Venture will now figure out which jobs can be immediately dispatched and process
 
 ### Starting workflows synchronously
 
-_todo_
+Venture also provides a way to start a workflow synchronously. To do so, you may call the `startSync` method when starting your workflow.
+
+```php
+PublishPodcastWorkflow::startSync($podcast);
+```
+
+What this will do is set the queue connection for all jobs of the workflow to use Laravel’s `sync` driver. This can be useful when developing locally or when debugging a workflow.
+
+::: details Synchronous evaluation of workflows
+By definition, Venture cannot process multiple jobs in parallel when running a workflow synchronously. Instead Venture will perform a **depth-first** evaluation of the workflow’s dependency graph.
+
+In a depth-first evaluation, Venture will start by running the first job of the workflow. After that job has finished, Venture will then try to recursively evaluate that job’s dependent jobs before moving on to the next job. In other words, Venture will try and process each branch of the workflow as deeply as it can until it hits a job that is still waiting on another dependency to be resolved.
+
+This won’t change the actual behavior of your workflow. I just thought it was neat.
+:::
 
 ### Starting workflows on different queue connections
 
-_todo_
+It’s also possible to explicitly override the queue connection of all jobs when starting a workflow. To do so, you may call the `startOnConnection` method to start your workflow.
+
+```php
+ProcessPodcastWorkflow::startOnConnection('sqs', $podcast);
+```
+
+This method takes the queue connection as its first parameter. Any other parameters will be passed to the workflow’s constructor.
+
+```php
+SendAnnoyingNewsletterWorkflow::startOnConnection(
+    'sqs',
+    $user,
+    $newsletter,
+);
+```
+
+The provided connection has to correspond to one of the connections defined in your application’s queue config.
+
+## Defining a completion callback {#workflow-completion-callback}
+
+You might want to perform an action after a workflow has finished successfully. To do so, you may call the `then` method on the `WorkflowDefinition` and pass in a closure.
+
+```php
+<?php
+    
+use App\Notifications\PodcastPublished;
+use App\Models\Podcast;
+use Sassnowski\Venture\AbstractWorkflow;
+use Sassnowski\Venture\WorkflowDefinition;
+
+class PublishPodcastWorkflow extends AbstractWorkflow
+{
+    public function __construct(private Podcast $podcast)
+    {
+    }
+
+    public function definition(): WorkflowDefinition
+    {
+        return $this->define('Publish Podcast')
+            // ...
+            ->then(function (Workflow $workflow) {
+                $this->podcast->user->notify(
+                    new PodcastPublished($this->podcast)
+                );
+            });
+    }    
+}
+```
+
+Alternatively, you may pass an invokable class to the `then` callback.
+
+```php
+$this->define('Publish Podcast')
+    // ...
+    ->then(new SendNotification());
+```
+
+:::tip Global event listeners
+If you want to perform some action after _any_ workflow has finished, check out the section on [writing plugins](/extending-venture/plugins).
+:::
+
+## Defining an error callback {#workflow-error-callback}
+
+You may want to perform some action whenever a job in your workflow fails. To do so, you may use the `catch` method when defining your workflow to register an error handler.
+
+```php
+<?php
+    
+use Throwable;
+use App\Notifications\PublishingPodcastFailed;
+use App\Models\Podcast;
+use Sassnowski\Venture\AbstractWorkflow;
+use Sassnowski\Venture\WorkflowDefinition;
+use Sassnowski\Venture\WorkflowStepInterface;
+
+class PublishPodcastWorkflow extends AbstractWorkflow
+{
+    public function __construct(private Podcast $podcast)
+    {
+    }
+
+    public function definition(): WorkflowDefinition
+    {
+        return $this->define('Publish Podcast')
+            // ...
+            ->catch(function (Workflow $workflow, WorkflowStepInterface $step, Throwable $exception) {
+                $this->podcast->user->notify(
+                    new PublishingPodcastFailed(
+                        $this->podcast,
+                        $step->getName(),
+                        $e
+                    ),
+                );
+            });
+    }    
+}
+```
+
+This callback will be called any time one of the workflow’s jobs fails. The catch-callback takes three parameters:
+
+- `$workflow` is the Eloquent model of the current workflow
+- `$step` is the job instance of the failed job
+- `$exception` is the exception that caused the job to fail
+
+By default, Venture will keep processing other jobs of the workflow that are unaffected by the failed job. This means that the `catch` callback for a workflow can get called multiple times if multiple jobs fail.
+
+::: tip Dealing with errors
+The fact that Venture keeps processing a workflow even if one of the workflow’s steps has failed is a feature, not a bug. Check out the section on [dealing with errors](/usage/dealing-with-errors) on why this is a useful property and also how to change this behavior when necessary.
+:::

@@ -107,7 +107,7 @@ class FlacPodcastWorkflow extends AbstractWorkflow
 }
 ```
 
-Note how we didn't need provide an explicit id for the `EncodePodcast` job because it's the only one of its kind in this workflow. We can still embed this workflow inside another workflow that also contains `EncodePodcast` jobs.
+Note how we didn't need to provide an explicit id for the `EncodePodcast` job because it's the only one of its kind in this workflow. We can still embed this workflow inside another workflow that also contains `EncodePodcast` jobs.
 
 ```php
 $this->define('Publish podcast')

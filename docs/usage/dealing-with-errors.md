@@ -1,9 +1,5 @@
 # Dealing with errors
 
-[[toc]]
-
-## Failures inside a workflow
-
 To explain how failed jobs affect a workflow, let's take a look at the following example:
 
 <div style="text-align: center">
@@ -17,24 +13,6 @@ It will, however, _not_ affect the execution of `JobF` and `JobG` because neithe
 This is a powerful property of workflows as it makes them more robust and less all-or-nothing. Just because you failed to notify your subscribers about a new podcast does not mean that the job to generate a transcription should not be run.
 
 If you do want a workflow to stop executing any further jobs, check the section below about [cancelling a workflow](#cancelling-a-workflow).
-
-## Handling failed steps
-
-Venture tries to provide a familiar API if you're used to Laravel's [queue batching feature](https://laravel.com/docs/8.x/queues#dispatching-batches). As such, you can register a `catch` callback when defining your workflow.
-
-```php
-$this->define('Register Podcast')
-    ->addJob(...)
-    ->catch(function (Workflow $workflow, WorkflowStepInterface $job, Throwable $e) {
-        //
-    });
-```
-
-This callback will be called any time one of the jobs in the workflow is marked as failed.
-
-::: warning Watch out
-When designing your `catch` callback, be aware that it might be called multiple times if multiple jobs fail.
-:::
 
 ## Cancelling a workflow
 

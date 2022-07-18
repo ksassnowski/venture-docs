@@ -6,17 +6,20 @@ As your application grows, you might want to extract a subset of jobs into a sep
 
 To add a workflow to another workflow, you can use the `addWorkflow` method on the definition instance.
 
-```php{14}
+```php{18}
 <?php
 
 namespace App\Workflows;
 
 use Sassnowski\Venture\AbstractWorkflow;
-use Sassnowski\Venture\Facades\Workflow;
 use Sassnowski\Venture\WorkflowDefinition;
 
 class PublishPodcastWorkflow extends AbstractWorkflow
 {
+ 	public function __construct(private Podcast $podcast)
+ 	{
+ 	}
+ 	
     public function definition(): WorkflowDefinition
     {
         return $this->define('Publish Podcast')
@@ -35,7 +38,6 @@ Just like regular jobs inside a workflow, nested workflows can also depend on ot
 namespace App\Workflows;
 
 use Sassnowski\Venture\AbstractWorkflow;
-use Sassnowski\Venture\Facades\Workflow;
 use Sassnowski\Venture\WorkflowDefinition;
 
 class PodcastWorkflow extends AbstractWorkflow
@@ -73,7 +75,6 @@ Just like a nested workflow can depend on a job, a job can depend on a nested wo
 namespace App\Workflows;
 
 use Sassnowski\Venture\AbstractWorkflow;
-use Sassnowski\Venture\Facades\Workflow;
 use Sassnowski\Venture\WorkflowDefinition;
 
 class PodcastWorkflow extends AbstractWorkflow
@@ -107,7 +108,6 @@ Finally, you can also have a nested workflow depend on another nested workflow.
 namespace App\Workflows;
 
 use Sassnowski\Venture\AbstractWorkflow;
-use Sassnowski\Venture\Facades\Workflow;
 use Sassnowski\Venture\WorkflowDefinition;
 
 class PodcastWorkflow extends AbstractWorkflow
