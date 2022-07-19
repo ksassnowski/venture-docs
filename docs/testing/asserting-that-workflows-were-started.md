@@ -1,9 +1,5 @@
 # Asserting that a workflow was started
 
-[[toc]]
-
-## Overview
-
 When testing code that deals with workflows, you may wish to mock out the workflow so that it is not actually executed during a given test.
 
 Similar to how most of Laravel's built-in facades work, Venture also provides a way to record which workflows would have been started. This way, you can easily assert that a workflow was started or not without actually dispatching any jobs.

@@ -132,10 +132,6 @@ export default {
             text: "Changing the table names",
           },
           {
-            link: "/configuration/customizing-the-migrations",
-            text: "Customizing the migrations",
-          },
-          {
             link: "/configuration/customizing-models",
             text: "Customizing models",
           },

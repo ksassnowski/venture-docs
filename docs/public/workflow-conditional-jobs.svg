@@ -16,7 +16,7 @@
 <g id="clust2" class="cluster">
 <title>cluster2</title>
 <polygon fill="none" stroke="black" points="176,-8 176,-151 581,-151 581,-8 176,-8"/>
-<text text-anchor="middle" x="378.5" y="-139" font-family="sans-serif" font-size="10.00">User is not pro user</text>
+<text text-anchor="middle" x="378.5" y="-139" font-family="sans-serif" font-size="10.00">User is regular user</text>
 </g>
 <!-- process1 -->
 <g id="node1" class="node">

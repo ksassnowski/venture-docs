@@ -12,7 +12,7 @@ digraph {
     }
 
     subgraph cluster2 {
-        label="User is not pro user"
+        label="User is regular user"
         fontname="sans-serif"
         fontsize=10
         labelloc="t"

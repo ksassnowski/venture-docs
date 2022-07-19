@@ -5,7 +5,7 @@ Venture creates two tables to keep track of workflows and their related jobs. By
 **config/venture.php**
 
 ```php
-<?php declare(strict_types=1);
+<?php
 
 return [
     'workflow_table' => 'workflows',

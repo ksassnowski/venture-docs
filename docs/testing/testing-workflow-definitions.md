@@ -1,4 +1,4 @@
-# Testing workflow definitions
+# Testing workflows
 
 ## Rationale
 
@@ -283,7 +283,7 @@ PublishPodcastWorkflow::test($podcast)
 ```
 
 ::: warning Note
-`assertJobExistsWithDependencies` checks for an **exact** match of the job's dependencies so be sure to provide all dependencies the job should have.
+`assertJobExistsWithDependencies` checks for an **exact** match of the job’s dependencies so be sure to provide all dependencies the job should have.
 :::
 
 ### `assertJobExistsOnConnection` {#assert-job-exists-on-connection}
