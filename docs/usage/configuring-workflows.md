@@ -411,7 +411,7 @@ $workflow = PublishPodcastWorkflow::start($podcast);
 
 Any parameter you pass to the `start` method will be passed to the workflow's constructor.
 
-The `start` method returns the `Workflow` Eloquent model for the workflow that you just started. Check out the section on [how to keep track of workflows](/usage/keeping-track-of-workflow) to learn about what you can do with this model.
+The `start` method returns the `Workflow` Eloquent model for the workflow that you just started. Check out the section on [how to keep track of workflows](/usage/keeping-track-of-workflows) to learn about what you can do with this model.
 
 Venture will now figure out which jobs can be immediately dispatched and process them in parallel. Every time a job finishes, it will check if any of the job's _dependent_ jobs are now ready to be run. If so, it will dispatch them.
 
