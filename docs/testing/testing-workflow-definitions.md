@@ -244,9 +244,43 @@ Below is a list of all available assertions to inspect a workflow’s definition
 - [`assertWorkflowExists`](#assert-workflow-exists)
 - [`assertWorkflowMissing`](#assert-workflow-missing)
 
+::: details Using the correct job ID in assertions
+Be aware that all assertions check if a workflow contains a job for a given **ID**. This means that when adding a job with an explicit id, you have to use the same id in the assertions.
+
+```php
+$this->define('Publish Podcast')
+    ->addJob(new ProcessPodcast(), id: 'process-podcast');
+```
+
+In this example, the id of the job is `process-podcast`, _not_ `ProcessPodcast::class`. To check if the workflow either contains or doesn’t contain this job, you need to pass `process-podcast` as the job id to the assertion method.
+
+```php
+PublishPodcastWorkflow::test($podcast)
+    // This will pass since the workflow does contain
+    // a job with it `process-podcast`.
+    ->assertJobExists('process-podcast')
+    // This will fail since there is no job with the
+    // id `ProcessPodcast::class`.
+    ->assertJobExists(ProcessPodcast::class);
+```
+
+If you don’t provide an explicit ID when adding a job to a workflow, Venture uses the fully qualified name of the job class by default.
+
+```php
+$this->define('Publish Podcast')
+    ->addJob(new ProcessPodcast());
+
+PublishPodcastWorkflow::test($podcast)
+    // This will pass since there is a job with the
+    // id `ProcessPodcast::class`.
+    ->assertJobExists(ProcessPodcast::class);
+```
+
+:::
+
 ### `assertJobExists` {#assert-job-exists}
 
-To check that a workflow contains a specific job, you can call the `hasJob` method on your workflow definition. This will return a boolean to indicate if the given job is part of the workflow.
+The `assertJobExists` method asserts that a workflow contains a job with the provided ID.
 
 ```php
 $podcast = new Podcast(['optimization_enabled' => true]);
@@ -255,18 +289,56 @@ PublishPodcastWorkflow::test($podcast)
     ->assertJobExists(OptimizePodcast::class);
 ```
 
-**TODO**
+The method also takes a closure as an optional second parameter that gets called with the found job if it exists. If the closure returns true, the assertion passes. If it returns false, the assertion fails.
 
-- provide callback -> true
-- provide callback -> false
+```php
+$podcast = new Podcast(['optimization_enabled' => true]);
+
+PublishPodcastWorkflow::test($podcast)
+    ->assertJobExists(
+    	OptimizePodcast::class, 
+    	function (WorkflowStepInterface $job) {
+            return $job->getQueue() === 'high-priority';
+        }
+	);
+```
+
+::: tip Using the right assertion
+`assertJobExists` is the most generic assertion to check if a workflow contains a certain job. It is useful when you want to check multiple properties of a job at the same time. 
+
+If you only want to check for specific properties of a job—for example its dependencies—using one of the more specific assertions is going to be more expressive and yield clearer errors if the assertion fails.
+:::
 
 ### `assertJobMissing` {#assert-job-missing}
 
-_todo_
+The `assertJobMissing` method asserts that a workflow does not contain a job with the provided ID.
+
+```php
+$podcast = new Podcast(['optimization_enabled' => false]);
+
+PublishPodcastWorkflow::test($podcast)
+    ->assertJobMissing(OptimizePodcast::class);
+```
+
+Similar to `assertJobExists`, this assertion also accepts a closure as an optional second parameter. If a closure is provided, the assertion doesn’t immediately fail if a job for the given id exists in the workflow. Instead, the closure gets called with the found job. If the closure returns `false`, the assertion passes. If it returns `true`, the assertion fails.
+
+```php
+$podcast = new Podcast(['optimization_enabled' => false]);
+
+PublishPodcastWorkflow::test($podcast)
+    ->assertJobMissing(
+    	OptimizePodcast::class, 
+    	function (WorkflowStepInterface $job) {
+            return $job->getQueue() === 'high-priority';
+        }
+	);
+```
+
+The example above would pass even if the workflow contains an `OptimizePodcast` job, as long as the job’s queue isn’t also set to `high-priority`.
 
 ### `assertJobExistsWithDependencies` {#assert-job-exists-with-dependencies}
 
-You can also check if a job is part of the workflow and has the correct dependencies. To do this, you can use the `hasJobWithDependencies` method on the definition.
+The `assertJobExistsWithDependencies` asserts that a workflow contains a job with the provided ID and dependencies.
 
 ```php
 $podcast = new Podcast([
@@ -279,49 +351,101 @@ PublishPodcastWorkflow::test($podcast)
 	    ReleaseOnApplePodcasts::class,
     	[OptimizePodcast::class],
     );
-);
 ```
 
-::: warning Note
 `assertJobExistsWithDependencies` checks for an **exact** match of the job’s dependencies so be sure to provide all dependencies the job should have.
-:::
 
 ### `assertJobExistsOnConnection` {#assert-job-exists-on-connection}
 
-_todo_
+The `assertJobExistsOnConnection` method asserts that a workflow contains a job with the provided ID and connection.
+
+```php
+$podcast = new Podcast([
+    'notify_user' => true,
+]);
+
+PublishPodcastWorkflow::test($podcast)
+    ->assertJobExistsOnConnection(
+	    SendNotificationToUser::class,
+    	'sqs',
+    );
+```
 
 ### `assertJobExistsOnQueue` {#assert-job-exists-on-queue}
 
-_todo_
+The `assertJobExistsOnQueue` method asserts that a workflow contains a job with the provided ID and queue.
+
+```php
+$podcast = new Podcast(['optimization_enabled' => true]);
+
+PublishPodcastWorkflow::test($podcast)
+    ->assertJobExistsOnQueue(
+    	OptimizePodcast::class, 
+    	'high-priority',
+	);
+```
 
 ### `assertGatedJobExists` {#assert-gated-job-exists}
 
-_todo_
+The `assertJobGatedJobExists` method asserts that a workflow contains a [gated job](/usage/configuring-workflows#gated-jobs) with the provided ID.
+
+```php
+$podcast = new Podcast([
+    'release_on_transistor' => true,
+    'requires_approval' => true,
+]);
+
+PublishPodcastWorkflow::test($podcast)
+    ->assertGatedJobExists(PublishToTransitorFM::class);
+```
+
+This assertion fails if the workflow contains a non-gated job with the same id.
+
+You may also provide an array of dependencies the job should have as the second parameter.
+
+```php
+$podcast = new Podcast([
+    'release_on_transistor' => true,
+    'requires_approval' => true,
+]);
+
+PublishPodcastWorkflow::test($podcast)
+    ->assertGatedJobExists(	
+    	PublishToTransistorFM::class,
+    	[ProcessPodcast::class, OptimizePodcast::class]
+	);
+```
+
+This checks for an **exact** match of the job’s dependencies so be sure to provide all dependencies the job should have.
 
 ### `assertWorkflowExists` {#assert-workflow-exists}
 
-To check that a workflow contains a nested workflow, you can use the `hasWorkflow` method on the workflow definition object.
+The `assertWorkflowExists` method asserts that a workflow contains a nested workflow with the provided ID.
 
 ```php
-$podcast = new Podcast();
+$podcast = new Podcast([
+    'encode_flac' => true,
+]);
+
+PublishPodcastWorkflow::test($podcast)
+    ->assertWorkflowExists(FlacPodcastWorkflow::class);
+```
+
+You may also provide an array of dependencies the workflow should have as the second parameter.
+
+```php
+$podcast = new Podcast([
+    'encode_flac' => true,
+]);
 
 PublishPodcastWorkflow::test($podcast)
     ->assertWorkflowExists(
-    	EncodePodcastWorkflow::class,
+    	FlacPodcastWorkflow::class,
     	[ProcessPodcast::class],
 	);
 ```
 
-This would check that the workflow definition contains a nested `EncodePodcastWorkflow` that depends on the `ProcessPodcast` job. If you don't care about the dependencies, you can leave out the second paramater (or pass `null`).
-
-```php
-// Just want to know that EncodePodcastWorkflow exists.
-// We don't care about its dependencies.
-$podcast = new Podcast();
-
-PublishPodcastWorkflow::test($podcast)
-    ->assertWorkflowExists(EncodePodcastWorkflow::class);
-```
+This checks for an **exact** match of the workflow’s dependencies so be sure to provide all dependencies the workflow should have.
 
 ::: warning Note
 `assertWorkflowExists` does **not** work recursively, meaning it will always return `false` when checking for a workflow that is part of another nested workflow. You shouldn't test the internals of your dependencies. Instead, write another test for `EncodePodcastWorkflow` and check for the nested workflow there.
@@ -329,6 +453,15 @@ PublishPodcastWorkflow::test($podcast)
 
 ### `assertWorkflowMissing` {#assert-workflow-missing}
 
-_todo_
+The `assertWorkflowMissing` method asserts that a workflow does not contain a nested workflow with the provided ID.
+
+```php
+$podcast = new Podcast([
+    'encode_flac' => false,
+]);
+
+PublishPodcastWorkflow::test($podcast)
+    ->assertWorkflowMissing(FlacPodcastWorkflow::class);
+```
 
 ## Testing workflow callbacks

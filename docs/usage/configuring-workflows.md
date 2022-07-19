@@ -346,55 +346,60 @@ $this->define('Publish Podcast')
 
 You can also leave out the second parameter to the `whenDefined` method. In this case, the dependency will be completely removed from the job if no corresponding job exists in the workflow. If that leaves a job without any dependencies, it will be dispatched immediately after the workflow starts.
 
-## Defining the queue for jobs
+## Configuring job queues
 
-## Defining the connection for jobs
+You have multiple options to configure which queue or queue connection each job in a workflow should get dispatched on. Since workflow jobs are just regular Laravel jobs, everything from [Laravel’s queue documentation](https://laravel.com/docs/9.x/queues) still applies to them.
 
-Since workflow jobs are just regular Laravel jobs, you have multiple options of specifying the queue connection for each job.
+### Configuring individual jobs
 
-### Specify a default connection inside the job class
+To configure the queue or queue connection of an individual job inside a workflow, you may call the `onQueue` and `onConnection` methods on a job instance, respectively.
 
-You can set the default connection in the `connection` property of your model:
-
-```php{5}
-class OptimizePodcast implements WorkflowStepInterface
-{
-  use WorkflowStep;
-  
-  public $connection = 'high-priority';
-  
-  public function handle(): void
-  {
-    // ...
-  }
-}
+``` php
+$this->define('Publish Podcast')
+    ->addJob(
+    	(new ProcessPodcast())->onConnection('sqs'),
+    )
+    ->addJob(
+    	(new OptimizePodcast($this->podcast))->onQueue('high-priority'),
+    	[ProcessPodcast::class],
+	);
 ```
 
-### Setting the connection on a job instance
+This will override any defaults that might have been set inside the job class itself.
 
-In case you want to specify the connection for a job at runtime, you can call the `onConnection` method on the job instance. This will override any potential default queue defined by the job class’ `$connection` property.
+### Configuring all jobs of a workflow at once
+
+If you want to change the queue or queue connections for all jobs in a workflow, you may call the `allOnQueue` and `allOnConnection` methods on the workflow definition, respectively.
 
 ```php
 $this->define('Publish Podcast')
-  ->addJob((new OptimizePodcast())->onConnection('high-priority'));
+    ->allOnConnection('sqs')
+    ->allOnQueue('high-priority')
+    ->addJob(new ProcessPodcast())
+    ->addJob(
+    	new OptimizePodcast($this->podcast),
+    	[ProcessPodcast::class],
+	);
 ```
 
-### Defining the connection for all jobs of a workflow
+::: warning Configuration precedence
+Note that calling `allOnQueue` or `allOnConnection`  will always take precedence over a job’s individual configuration. 
 
-Sometimes it might be useful to set the connection for all jobs of a workflow. In these cases you may use the `allOnConnection` method when defining your workflow.
-
-```php{6}
-class PublishPodcastWorkflow extends AbstractWorkflow
-{
-  public function define(): WorkflowDefinition
-  {
-    return $this->define('Publish Podcast')
-      ->allOnConnection('high-priority')
-      ->addJob(new ProcessPodcast())
-      ->addJob(new OptimizePodcast());
-  }
-}
+```php
+$this->define('Publish Podcast')
+    ->allOnQueue('high-priority')
+    ->addJob(
+    	(new ProcessPodcast())->onQueue('medium-priority'),
+    )
+    ->addJob(
+    	new OptimizePodcast($this->podcast),
+    	[ProcessPodcast::class],
+	);
 ```
+
+In this example, the `ProcessPodcast` job will still get dispatched on the `high-priority` queue since `allOnQueue` takes precedence.
+
+:::
 
 ## Starting a workflow
 

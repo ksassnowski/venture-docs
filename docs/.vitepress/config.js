@@ -118,8 +118,8 @@ export default {
             text: "Testing workflows",
           },
           {
-            link: "/testing/asserting-that-workflows-were-started",
-            text: "Asserting that a workflow was started",
+            link: "/testing/faking-workflows",
+            text: "Faking workflows",
           },
         ],
       },
