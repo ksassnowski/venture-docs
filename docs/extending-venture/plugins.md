@@ -299,7 +299,6 @@ final class JobFailed
 Corresponds to `PluginContext::onJobFinished`.
 
 - This event fires after a job was processed successfully.
-- This event fires after the `then` callback of the corresponding workflow was called.
 
 #### Payload
 
@@ -344,8 +343,8 @@ final class JobProcessing
 
 Corresponds to `PluginContext::onWorkflowAdding`.
 
-- This event fires after a job was processed successfully.
-- This event fires after the `then` callback of the corresponding workflow was called.
+- This event fires when a nested workflow is getting added to a workflow. This happens at the beginning of the `addWorkflow` method.
+- When this event fires, the nested workflow has not been added yet so you can still make changes.
 
 #### Payload
 
@@ -365,14 +364,137 @@ final class WorkflowAdding
 | ------------------- | -------------------- | ------------------------------------------------------------ |
 | `$parentDefinition` | `WorkflowDefinition` | The definition of the parent workflow, i.e. the workflow the nested workflow gets added to. You can get the actual workflow via the `$definition->workflow()` method. |
 | `$nestedDefinition` | `WorkflowDefinition` | The definition of the workflow that is getting nested into `$parentDefinition`. You can get the actual workflow via the `$definition->workflow()` method. |
-| `$workflowID`       | `string`             |                                                              |
+| `$workflowID`       | `string`             | The ID of the workflow that was passed to the `addJob` method. |
 
 ### `WorkflowAdded` {#workflow-added}
 
+Corresponds to `PluginContext::onWorkflowAdded`.
+
+- This event fires after a nested workflow was added to a workflow. This happens at the end of the `addWorkflow` method.
+
+#### Payload
+
+```php
+final class WorkflowAdding
+{
+    public function __construct(
+        public WorkflowDefinition $parentDefinition,
+        public WorkflowDefinition $nestedDefinition,
+        public string $workflowID,
+    ) {
+    }
+}
+```
+
+| Parameter           | Type                 | Description                                                  |
+| ------------------- | -------------------- | ------------------------------------------------------------ |
+| `$parentDefinition` | `WorkflowDefinition` | The definition of the parent workflow, i.e. the workflow the nested workflow was added to. You can get the actual workflow via the `$definition->workflow()` method. |
+| `$nestedDefinition` | `WorkflowDefinition` | The definition of the workflow that was nested into `$parentDefinition`. You can get the actual workflow via the `$definition->workflow()` method. |
+| `$workflowID`       | `string`             | The ID of the nested workflow.                               |
+
 ### `WorkflowCreating` {#workflow-creating}
+
+Corresponds to `PluginContext::onWorkflowCreating`.
+
+- This event fires before a `Workflow` gets saved to the database. This happens after the `start` method of a workflow was called but before the workflow has actually started.
+- This event fires right before `WorkflowCreated`.
+- This event fires before the `beforeCreate` hook of the workflow gets called.
+- This event fires before any `JobCreating` events fire.
+
+#### Payload
+
+```php
+final class WorkflowCreating
+{
+    public function __construct(
+        public WorkflowDefinition $definition,
+        public Workflow $model,
+    ) {
+    }
+}
+```
+
+| Parameter     | Type                 | Description                                                  |
+| ------------- | -------------------- | ------------------------------------------------------------ |
+| `$definition` | `WorkflowDefinition` | The definition of the workflow that is about to be saved. You can get the actual workflow class via the `$definition->workflow()` method. |
+| `$workflow`   | `Workflow`           | The workflow Eloquent model that is about to be saved. At this point the model has not been persisted yet, so you can still change its attributes. |
 
 ### `WorkflowCreated` {#workflow-created}
 
+Corresponds to `PluginContext::onWorkflowCreated`.
+
+- This event fires after a `Workflow` was saved to the database. This happens after the `start` method of a workflow was called but before the workflow has actually started.
+- This event fires right after `WorkflowCreating`.
+- This event fires before any `JobCreating` events fire.
+
+#### Payload
+
+```php
+final class WorkflowCreated
+{
+    public function __construct(
+        public WorkflowDefinition $definition,
+        public Workflow $model,
+    ) {
+    }
+}
+```
+
+| Parameter     | Type                 | Description                                                  |
+| ------------- | -------------------- | ------------------------------------------------------------ |
+| `$definition` | `WorkflowDefinition` | The definition of the workflow that is about to be saved. You can get the actual workflow class via the `$definition->workflow()` method. |
+| `$workflow`   | `Workflow`           | The workflow Eloquent model that is about to be saved. At this point, the workflow has been persisted to the database so you can get its ID via `$workflow->id`. |
+
 ### `WorkflowFinished` {#workflow-finished}
 
+Corresponds to `PluginContext::onWorkflowFinished`.
+
+- This event fires after a `Workflow` after every job of a workflow has been successfully processed.
+- This event fires after the `then` callback of the corresponding workflow was called.
+
+#### Payload
+
+```php
+final class WorkflowFinished
+{
+    public function __construct(
+        public Workflow $workflow,
+    ) {
+    }
+}
+```
+
+| Parameter   | Type       | Description                                           |
+| ----------- | ---------- | ----------------------------------------------------- |
+| `$workflow` | `Workflow` | The workflow Eloquent model of the finished workflow. |
+
 ### `WorkflowStarted` {#workflow-started}
+
+Corresponds to `PluginContext::onWorkflowStarted`.
+
+- This event fires after a workflow was started.
+- This event fires after the initial jobs of the workflow have been dispatched.
+- This event fires after the `WorkflowCreating` and `WorkflowCreated` events.
+
+#### Payload
+
+```php
+final class WorkflowStarted
+{
+    /**
+     * @param array<int, WorkflowStepInterface> $initialJobs
+     */
+    public function __construct(
+        public AbstractWorkflow $workflow,
+        public Workflow $model,
+        public array $initialJobs,
+    ) {
+    }
+}
+```
+
+| Parameter      | Type                                | Description                                                  |
+| -------------- | ----------------------------------- | ------------------------------------------------------------ |
+| `$workflow`    | `AbstractWorkflow`                  | The workflow class of the started workflow.                  |
+| `$model`       | `Workflow`                          | The Eloquent model of the started workflow.                  |
+| `$initialJobs` | `array<int, WorkflowStepInterface>` | The job instances of the initial jobs that were dispatched when the workflow was started. |
