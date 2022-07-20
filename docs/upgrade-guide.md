@@ -8,17 +8,23 @@
 
 Starting with version 4.0, Venture requires Laravel 9.
 
+### Migrations don’t get run automatically anymore
+
+**Likelihood of Impact: Low**
+
 ### Migrating the database
 
-**Likelihood of Impact: Required**
+**Likelihood of Impact: Very High**
 
-_todo_
+Venture 4 added three new columns to the `workflow_jobs` table.
 
 ### Jobs should implement `WorkflowStepInterface`
 
 **Likelihood of Impact: Optional (but highly recommended)**
 
 Up until now, workflow jobs only had to use the `WorkflowStep` trait in order to use them as part of a workflow. Venture 4 introduces a `WorkflowStepInterface` that all jobs need to implement.
+
+In Venture 4, jobs that don’t implement the interface yet will get wrapped in an adapter class internally. Adding these jobs to a workflow will trigger a deprecation warning in Venture 4. Starting with Venture 5, all jobs will need to implement this interface.
 
 The `WorkflowStep` trait automatically implements `WorkflowStepInterface`. This means all you will have to do is add the interface to your job’s class declaration.
 

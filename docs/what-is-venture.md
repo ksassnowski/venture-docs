@@ -1,5 +1,7 @@
 # What is Venture?
 
+…but a miserable pile of secrets. But enough, have at you!
+
 **1. Define your Workflow**
 
 ```php
