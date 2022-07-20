@@ -493,7 +493,7 @@ $this->define('Publish Podcast')
 ```
 
 :::tip Global event listeners
-If you want to perform some action after _any_ workflow has finished, check out the section on [writing plugins](/extending-venture/plugins).
+If you want to perform some action after _any_ workflow has finished, check out the section on [writing plugins](/plugins/writing-plugins).
 :::
 
 ## Defining an error callback {#workflow-error-callback}
@@ -545,6 +545,11 @@ By default, Venture will keep processing other jobs of the workflow that are una
 The fact that Venture keeps processing a workflow even if one of the workflow’s steps has failed is a feature, not a bug. Check out the section on [dealing with errors](/usage/dealing-with-errors) on why this is a useful property and also how to change this behavior when necessary.
 :::
 
+### Adding jobs at runtime
+
+::: warning Todo
+:::
+
 ## Lifecycle hooks
 
 ::: warning Todo
@@ -583,4 +588,5 @@ The `beforeCreate` hook gets passed an instance of `Sassnowski\Venture\Models\Wo
 
 ### `beforeNesting` {#hook-before-nesting}
 
-_todo_
+_::: warning Todo
+:::_

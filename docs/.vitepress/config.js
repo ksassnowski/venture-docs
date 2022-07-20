@@ -98,14 +98,11 @@ export default {
         ],
       },
       {
-        text: "Extending Venture",
+        text: "Plugins",
         collapsible: true,
         items: [
-          { link: "/extending-venture/plugins", text: "Writing plugins" },
-          {
-            link: "/extending-venture/lifecycle-hooks",
-            text: "Workflow lifecycle hooks",
-          },
+          { link: "/plugins/writing-plugins", text: "Writing plugins" },
+          { link: "/plugins/entity-aware-workflows", text: "Entity aware workflows" },
         ],
       },
       {
