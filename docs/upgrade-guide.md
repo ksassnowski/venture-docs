@@ -8,15 +8,42 @@
 
 Starting with version 4.0, Venture requires Laravel 9.
 
-### Migrations don’t get run automatically anymore
-
-**Likelihood of Impact: Low**
-
 ### Migrating the database
 
 **Likelihood of Impact: Very High**
 
-Venture 4 added three new columns to the `workflow_jobs` table.
+::: warning Migration don’t run automatically anymore
+Venture 4 no longer registers its migrations to run automatically. This means that from now on, you will need to create the migration to add any new columns yourself. The exact columns to add will always be listed in the upgrade guide and no database changes will happen in minor releases.
+:::
+
+Venture 4 added three new columns to the `workflow_jobs` table:
+
+- `gated_at`
+- `gated`
+- `started_at`
+
+To add these columns, create a new migration and add the following contents:
+
+```php
+<?php
+
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+return new class() extends Migration {
+    public function up()
+    {
+        Schema::create(config('venture.jobs_table'), function (Blueprint $table) {
+            $table->timestamp('gated_at')->nullable();
+            $table->timestamp('started_at')->nullable();
+            $table->boolean('gated')->default(false);
+        });
+    }
+};
+```
+
+After this, run the migration with the `artisan migrate` command.
 
 ### Jobs should implement `WorkflowStepInterface`
 
@@ -24,9 +51,9 @@ Venture 4 added three new columns to the `workflow_jobs` table.
 
 Up until now, workflow jobs only had to use the `WorkflowStep` trait in order to use them as part of a workflow. Venture 4 introduces a `WorkflowStepInterface` that all jobs need to implement.
 
-In Venture 4, jobs that don’t implement the interface yet will get wrapped in an adapter class internally. Adding these jobs to a workflow will trigger a deprecation warning in Venture 4. Starting with Venture 5, all jobs will need to implement this interface.
+In Venture 4, jobs that don’t implement the interface yet will get wrapped in an adapter class internally. Adding these jobs to a workflow will trigger a deprecation warning. Starting with Venture 5, support for jobs that don’t implement the `WorkflowStepInterface` will be dropped.
 
-The `WorkflowStep` trait automatically implements `WorkflowStepInterface`. This means all you will have to do is add the interface to your job’s class declaration.
+The `WorkflowStep` trait automatically implements the `WorkflowStepInterface`. This means all you will have to do is add the interface to your job’s class declaration.
 
 ```diff
 use Sassnowski\Venture\WorkflowStep;

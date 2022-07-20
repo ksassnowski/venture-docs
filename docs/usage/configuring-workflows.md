@@ -544,3 +544,43 @@ By default, Venture will keep processing other jobs of the workflow that are una
 ::: tip Dealing with errors
 The fact that Venture keeps processing a workflow even if one of the workflow’s steps has failed is a feature, not a bug. Check out the section on [dealing with errors](/usage/dealing-with-errors) on why this is a useful property and also how to change this behavior when necessary.
 :::
+
+## Lifecycle hooks
+
+::: warning Todo
+:::
+
+### `beforeCreate` {#hook-before-create}
+
+Sometimes you may want to modify a workflow before it gets saved to the database for the first time. To do so, you may implement the `beforeCreate` method on your workflow class.
+
+```php{18-21}
+<?php declare(strict_types=1);
+
+use Sassnowski\Venture\Models\Workflow;
+use Sassnowski\Venture\AbstractWorkflow;
+use Sassnowski\Venture\WorkflowDefinition;
+
+class PublishPodcastWorkflow extends AbstractWorkflow
+{
+    public function __construct(private Podcast $podcast)
+    {
+    }
+
+    public function definition(): WorkflowDefinition
+    {
+        // ...
+    }
+
+    public function beforeCreate(Workflow $workflow): void
+    {
+        $workflow->user_id = $this->podcast->user_id;
+    }
+}
+```
+
+The `beforeCreate` hook gets passed an instance of `Sassnowski\Venture\Models\Workflow`, which is a regular Eloquent model. As the name suggests, this hook is called before the workflow is persisted to the database for the first time. So the workflow model won't have an `id` yet.
+
+### `beforeNesting` {#hook-before-nesting}
+
+_todo_
