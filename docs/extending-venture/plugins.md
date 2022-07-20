@@ -150,42 +150,229 @@ Venture::registerPlugin(
 
 Below is a list of all events Venture fires during its life cycle. You can click on each event to jump to the section explaining when this event gets fired, how to register a handler for it, and what the event payload is.
 
-- [`JobAdding`](#jobadding)
-- [`JobAdded`](#jobadded)
-- [`JobCreating`](#jobcreating)
-- [`JobCreated`](#jobcreated)
-- [`JobFailed`](#jobfailed)
-- [`JobFinished`](#jobfinished)
-- [`JobProcessing`](#jobprocessing)
-- [`WorkflowAdding`](#workflowadding)
-- [`WorkflowAdded`](#workflowadded)
-- [`WorkflowCreating`](#workflowcreating)
-- [`WorkflowCreated`](#workflowcreated)
-- [`WorkflowFinished`](#workflowfinished)
-- [`WorkflowStarted`](#workflowstarted)
+- [`JobAdding`](#job-adding)
+- [`JobAdded`](#job-added)
+- [`JobCreating`](#job-creating)
+- [`JobCreated`](#job-created)
+- [`JobFailed`](#job-failed)
+- [`JobFinished`](#job-finished)
+- [`JobProcessing`](#job-processing)
+- [`WorkflowAdding`](#workflow-adding)
+- [`WorkflowAdded`](#workflow-added)
+- [`WorkflowCreating`](#workflow-creating)
+- [`WorkflowCreated`](#workflow-created)
+- [`WorkflowFinished`](#workflow-finished)
+- [`WorkflowStarted`](#workflow-started)
 
-### `JobAdding`
+### `JobAdding` {#job-adding}
 
-### `JobAdded`
+Corresponds to `PluginContext::onJobAdding`.
 
-### `JobCreating`
+- This event fires when a new job is getting added to a workflow’s definition. This happens at the beginning of the `WorkflowDefinition::addJob` method. 
+- When this event gets fired, the job hasn’t yet been added to the dependency graph of the workflow, so you can still make changes to it.
 
-### `JobCreated`
+#### Payload
 
-### `JobFailed`
+```php
+final class JobAdding
+{
+    public function __construct(
+        public WorkflowDefinition $definition,
+        public WorklfowStepInterface $job,
+        public ?string $name,
+        public mixed $delay,
+        public ?string $id,
+    ) {
+    }
+}
+```
 
-### `JobFinished`
+| Property      | Type                                         | Description                                                  |
+| ------------- | -------------------------------------------- | ------------------------------------------------------------ |
+| `$definition` | `WorkflowDefinition`                         | The `WorkflowDefinition` object to which the job is getting added. You can get the actual workflow class the definition belongs to via the `$definition->workflow()` method. |
+| `$job`        | `WorkflowStepInterface`                      | The job instance that is being added to the definition.      |
+| `$name`       | `string|null`                                | The name of the job that was passed to the `addJob` method. You can change the name of the job by setting this property on the event. If `$name` is still `null` after all event listeners have been called, the FQCN of the job class will get used instead. |
+| `$delay`      | `DateTimeInterface|DateInterval| array|null` | The delay for the job that was passed to the `addJob` method. You can change the delay of the job by setting this property on the event. |
+| `$jobID`      | `string|null`                                | The ID of the job that was passed to the `addJob` method. You can change the ID of the job by setting this property on the event. |
 
-### `JobProcessing`
+### `JobAdded` {#job-added}
 
-### `WorkflowAdding`
+Corresponds to `PluginContext::onJobAdded`.
 
-### `WorkflowAdded`
+- This event fires after a job was added to a workflow. This happens at the end of the `WorkflowDefinition::addJob` method.
 
-### `WorkflowCreating`
+#### Payload
 
-### `WorkflowCreated`
+```php
+final class JobAdded
+{
+    public function __construct(
+        public WorkflowDefinition $definition,
+        public WorkflowStepInterface $job,
+    ) {
+    }
+}
+```
 
-### `WorkflowFinished`
+| Parameter     | Type                    | Description                                                  |
+| ------------- | ----------------------- | ------------------------------------------------------------ |
+| `$definition` | `WorkflowDefinition`    | The definition the job was added to. You can get the actual workflow class via the `$definition->workflow()` method. |
+| `$job`        | `WorkflowStepInterface` | The job instance that was added.                             |
 
-### `WorkflowStarted`
+### `JobCreating` {#job-creating}
+
+Corresponds to `PluginContext::onJobCreating`.
+
+- This event fires before a `WorkflowJob` gets saved to the database. This happens after the `start` method of a workflow was called but before the workflow has actually started. 
+- This event fires for every job that was added to the workflow’s definition.
+- This event fires right before [`JobCreated`](#job-created)
+
+#### Payload
+
+```php
+final class JobCreating
+{
+    public function __construct(
+        public Workflow $workflow,
+        public WorkflowJob $job,
+    ) {
+    }
+}
+```
+
+| Parameter   | Type          | Description                                                  |
+| ----------- | ------------- | ------------------------------------------------------------ |
+| `$workflow` | `Workflow`    | The workflow Eloquent model that the job is associated with. |
+| `$job`      | `WorkflowJob` | The Eloquent model of the job that is about to be saved. You can retrieve the related `WorkflowStepInterface` via the `$job->step()` method. |
+
+### `JobCreated` {#job-created}
+
+Corresponds to `PluginContext::onJobCreated`.
+
+- This event fires after a `WorkflowJob` got saved to the database. This happens after the `start` method of a workflow was called but before the workflow has actually started. 
+- This event fires for every job that was added to a workflow’s definition.
+- This event fires right after [`JobCreating`](#job-creating).
+
+#### Payload
+
+```php
+final class JobCreated
+{
+    public function __construct(
+        public WorkflowJob $job,
+    ) {
+    }
+}
+```
+
+| Parameter | Type          | Description                                                  |
+| --------- | ------------- | ------------------------------------------------------------ |
+| `$job`    | `WorkflowJob` | The Eloquent model of the job that is about to be saved. You can retrieve the related `WorkflowStepInterface` via the `$job->step()` method. You can retrieve the associated workflow model via `$job->workflow`. |
+
+### `JobFailed` {#job-failed}
+
+Corresponds to `PluginContext::onJobFailed`.
+
+- This event fires after an error occured while processing a job.
+- This event fires after the `catch` callback of the corresponding workflow was called.
+
+#### Payload
+
+```php
+final class JobFailed
+{
+    public function __construct(
+        public WorkflowStepInterface $job,
+        public Throwable $exception,
+    ) {
+    }
+}
+```
+
+| Parameter    | Type                    | Description                                                  |
+| ------------ | ----------------------- | ------------------------------------------------------------ |
+| `$job`       | `WorkflowStepInterface` | The failed job instance. You can retry a job by calling its `retry` method. |
+| `$exception` | `Throwable`             | The exception that occurred while processing the job.        |
+
+### `JobFinished` {#job-finished}
+
+Corresponds to `PluginContext::onJobFinished`.
+
+- This event fires after a job was processed successfully.
+- This event fires after the `then` callback of the corresponding workflow was called.
+
+#### Payload
+
+```php
+final class JobFinished
+{
+    public function __construct(
+        public WorkflowStepInterface $job,
+    ) {
+    }
+}
+```
+
+| Parameter | Type                    | Description       |
+| --------- | ----------------------- | ----------------- |
+| `$job`    | `WorkflowStepInterface` | The job instance. |
+
+### `JobProcessing` {#job-processing}
+
+Corresponds to `PluginContext::onJobProcessing`.
+
+- This event fires after a job was picked up by a queue worker.
+- This event will _not_ fire if the workflow the job belongs to has been cancelled in the meantime.
+
+#### Payload
+
+```php
+final class JobProcessing
+{
+    public function __construct(
+        public WorkflowStepInterface $job,
+    ) {
+    }
+}
+```
+
+| Parameter | Type                    | Description       |
+| --------- | ----------------------- | ----------------- |
+| `$job`    | `WorkflowStepInterface` | The job instance. |
+
+### `WorkflowAdding` {#workflow-adding}
+
+Corresponds to `PluginContext::onWorkflowAdding`.
+
+- This event fires after a job was processed successfully.
+- This event fires after the `then` callback of the corresponding workflow was called.
+
+#### Payload
+
+```php
+final class WorkflowAdding
+{
+    public function __construct(
+        public WorkflowDefinition $parentDefinition,
+        public WorkflowDefinition $nestedDefinition,
+        public string $workflowID,
+    ) {
+    }
+}
+```
+
+| Parameter           | Type                 | Description                                                  |
+| ------------------- | -------------------- | ------------------------------------------------------------ |
+| `$parentDefinition` | `WorkflowDefinition` | The definition of the parent workflow, i.e. the workflow the nested workflow gets added to. You can get the actual workflow via the `$definition->workflow()` method. |
+| `$nestedDefinition` | `WorkflowDefinition` | The definition of the workflow that is getting nested into `$parentDefinition`. You can get the actual workflow via the `$definition->workflow()` method. |
+| `$workflowID`       | `string`             |                                                              |
+
+### `WorkflowAdded` {#workflow-added}
+
+### `WorkflowCreating` {#workflow-creating}
+
+### `WorkflowCreated` {#workflow-created}
+
+### `WorkflowFinished` {#workflow-finished}
+
+### `WorkflowStarted` {#workflow-started}
