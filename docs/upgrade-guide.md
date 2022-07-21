@@ -22,6 +22,15 @@ Venture 4 added three new columns to the `workflow_jobs` table:
 - `gated`
 - `started_at`
 
+There are also two new columns that were added to the `workflows` table in order to allow workflows to be associated with models:
+
+- `workflowable_type`
+- `workflowable_id`
+
+::: tip Associating workflows with models
+Check out the [Entity Aware Workflows plugin](/plugins/entity-aware-workflows) to learn how to associate workflows with models.
+:::
+
 To add these columns, create a new migration and add the following contents:
 
 ```php
@@ -34,7 +43,11 @@ use Illuminate\Database\Migrations\Migration;
 return new class() extends Migration {
     public function up()
     {
-        Schema::create(config('venture.jobs_table'), function (Blueprint $table) {
+        Schema::table(config('venture.workflow_table'), function (Blueprint $table) {
+        	$table->nullableMorphs('workflowable'); 
+        });
+        
+        Schema::table(config('venture.jobs_table'), function (Blueprint $table) {
             $table->timestamp('gated_at')->nullable();
             $table->timestamp('started_at')->nullable();
             $table->boolean('gated')->default(false);

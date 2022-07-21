@@ -545,22 +545,54 @@ By default, Venture will keep processing other jobs of the workflow that are una
 The fact that Venture keeps processing a workflow even if one of the workflow’s steps has failed is a feature, not a bug. Check out the section on [dealing with errors](/usage/dealing-with-errors) on why this is a useful property and also how to change this behavior when necessary.
 :::
 
-### Adding jobs at runtime
+## Adding jobs at runtime
 
-::: warning Todo
+It is also possible to add jobs to an instance of a workflow class. This allows you to dynamically add jobs to a workflow that aren’t defined inside the workflows `definition` method.
+
+To do so, you may call the `tapDefinition` method on an instance of a workflow.
+
+```php
+$workflow = new ProcessPodcastWorkflow($podcast);
+
+$workflow->tapDefinition(function (WorkflowDefinition $definition) use ($podcast) {
+    $definition->addJob(new OptimizePodcast($podcast));
+});
+```
+
+This method takes a callback which gets passed the `WorkflowDefinition` object of the workflow instance. You can then add jobs or workflows to that definition just like you would inside the `definition` method itself.
+
+Note that this only changes the definition for this _instance_ of the workflow.
+
+::: warning With great power comes great responsibility
+While this feature can be useful in certain situations to dynamically add jobs to a workflow’s definition, it is something you should use sparingly. The recommended approach most of the time is to define all jobs a workflow can have inside the `definition` method. This way, you can see the entire structure of a workflow by just looking at this method.
+:::
+
+To start a workflow instance, you may call the `run` method on it.
+
+```php
+$workflow->run();
+```
+
+The `run` method takes an optional `$connection` parameter that allows you to specifiy the queue connection for all jobs of the workflow.
+
+```php
+$workflow->run('sync');
+```
+
+::: danger You cannot change a started workflow’s definition
+Note that is a way of dynamically changing a workflow’s definition _before_ it gets started. This won’t have an effect for workflows that are already running as their definitions are immutable.
 :::
 
 ## Lifecycle hooks
 
-::: warning Todo
-:::
+Workflows expose several hooks which allow you to perform actions during certain parts of a workflow’s lifecycle.
 
 ### `beforeCreate` {#hook-before-create}
 
-Sometimes you may want to modify a workflow before it gets saved to the database for the first time. To do so, you may implement the `beforeCreate` method on your workflow class.
+The `beforeCreate` hook gets called before a workflow gets persisted to the database for the first time. This typically happens after the `start` method was called on a workflow but before the workflow has actually started.
 
-```php{18-21}
-<?php declare(strict_types=1);
+```php
+<?php
 
 use Sassnowski\Venture\Models\Workflow;
 use Sassnowski\Venture\AbstractWorkflow;
@@ -568,25 +600,40 @@ use Sassnowski\Venture\WorkflowDefinition;
 
 class PublishPodcastWorkflow extends AbstractWorkflow
 {
-    public function __construct(private Podcast $podcast)
-    {
-    }
-
-    public function definition(): WorkflowDefinition
-    {
-        // ...
-    }
-
     public function beforeCreate(Workflow $workflow): void
     {
-        $workflow->user_id = $this->podcast->user_id;
     }
 }
 ```
 
-The `beforeCreate` hook gets passed an instance of `Sassnowski\Venture\Models\Workflow`, which is a regular Eloquent model. As the name suggests, this hook is called before the workflow is persisted to the database for the first time. So the workflow model won't have an `id` yet.
+The `beforeCreate` hook gets passed the `Workflow` Eloquent model for the workflow. At this point, the model hasn’t been saved to the database yet, which means it won’t have an ID yet.
+
+::: tip Performing the same action for all workflows
+The `beforeCreate` hook on the workflow allows you define actions that are specific to a workflow. If you want to perform the same action for _all_ of your workflows, you should [write a plugin](/plugins/writing-plugins#workflow-creating), instead.
+
+If all you want to do is associate workflows with models, you should check out the built-in [Entity Aware Workflows plugin](/plugins/entity-aware-workflows).
+:::
 
 ### `beforeNesting` {#hook-before-nesting}
 
-_::: warning Todo
-:::_
+The `beforeNesting` hook gets called when adding a nested workflow to a workflow’s definition. This happens when the `addWorkflow` method gets called on the workflow’s definition.
+
+```php
+<?php
+
+use Sassnowski\Venture\Models\Workflow;
+use Sassnowski\Venture\AbstractWorkflow;
+use Sassnowski\Venture\WorkflowDefinition;
+
+class PublishPodcastWorkflow extends AbstractWorkflow
+{
+    /**
+     * @param array<string, WorkflowStepInterface> $jobs
+     */
+    public function beforeNesting(array $jobs): void
+    {
+    }
+}
+```
+
+The `beforeNesting` method gets passed the jobs of the nested workflow. At this point, you can still change these jobs before they get added to the workflow.
