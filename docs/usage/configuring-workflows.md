@@ -292,7 +292,7 @@ Let’s look at the example from above. Say we want to add a job called  `Publis
 
 To deal with this, you may use the `ConditionalDependency` class that comes with Venture.
 
-```php{1,21-24}
+```php{1,21-24,30-33}
 use Sassnowski\Venture\Graph\ConditionalDependency;
 
 return $this->define('Publish Podcast')
@@ -314,14 +314,25 @@ return $this->define('Publish Podcast')
           new PublishOnTransistorFM($this->podcast),
           [
               ConditionalDependency::whenDefined(
-                  OptimizePodcast::class, 
+                  OptimizePodcast::class,
+                  DowngradePodcastQuality::class
+              ),
+          ],
+      )
+       ->addJob(
+          new PublishOnApplePodcasts($this->podcast),
+          [
+              ConditionalDependency::whenDefined(
+                  OptimizePodcast::class,
                   DowngradePodcastQuality::class
               ),
           ],
       );
 ```
 
-If the `OptimizePodcast` job exists in the workflow, it would get added as a dependency for the `PublishOnTransistorFM` job. If not, `PublishOnTransistorFM` would depend on `DowngradePodcastQuality` instead.
+If the `OptimizePodcast` job exists in the workflow, it would get added as a dependency for the `PublishOnTransistorFM` and `PublishOnApplePodcasts` jobs. If not, both jobs would depend on `DowngradePodcastQuality` instead.
+
+![](/workflow-conditional-dependency.svg)
 
 :::tip Testing workflow definitions
 Things are starting to get complicated now! You might also want to check out the section on how to go about [testing your workflow definitions](/testing/testing-workflow-definitions).

@@ -58,6 +58,16 @@ return new class() extends Migration {
 
 After this, run the migration with the `artisan migrate` command.
 
+### Removed `opis/closure` dependency
+
+**Likelihood of Impact: Low to Medium**
+
+Starting with version [3.6.5](https://github.com/ksassnowski/venture/releases/tag/3.6.5), Venture uses the `laravel/serializable-closure` package to serialize the `then` and `catch` callbacks of a workflow. Before that, the `opis/closure` package was used. To keep compatibility with older workflows, the `opis/closure` dependency was kept around even though new workflows didn’t use it anymore.
+
+Version 4 of Venture removed the `opis/closure` dependency. If you’ve been using at least version `3.6.5` of Venture for a while, this change shouldn’t affect you since all workflows that were using `opis/closure` should have already been run.
+
+If you still need backwards compatibility for older workflows, you should add `opis/closure` to your `composer.json` manually.
+
 ### Jobs should implement `WorkflowStepInterface`
 
 **Likelihood of Impact: Optional (but highly recommended)**
