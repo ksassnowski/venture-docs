@@ -6,7 +6,7 @@ As your application grows, you might want to extract a subset of jobs into a sep
 
 To add a workflow to another workflow, you can use the `addWorkflow` method on the definition instance.
 
-```php{18}
+```php{17}
 <?php
 
 namespace App\Workflows;
