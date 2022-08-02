@@ -12,20 +12,20 @@ Starting with version 4.0, Venture requires Laravel 9.
 
 **Likelihood of Impact: Very High**
 
-::: warning Migration is no longer ran automatically
+::: warning Migrations no longer run automatically
 Venture 4 no longer registers its migrations to run automatically. This means that from now on, you will need to create the migration to add any new columns yourself. The exact columns to add will always be listed in the upgrade guide and no database changes will happen in minor releases.
 :::
 
 Venture 4 added three new columns to the `workflow_jobs` table:
 
-- `gated_at`
-- `gated`
-- `started_at`
+-   `gated_at`
+-   `gated`
+-   `started_at`
 
 There are also two new columns that were added to the `workflows` table in order to allow workflows to be associated with models:
 
-- `workflowable_type`
-- `workflowable_id`
+-   `workflowable_type`
+-   `workflowable_id`
 
 ::: tip Associating workflows with models
 Check out the [Entity Aware Workflows plugin](/plugins/entity-aware-workflows) to learn how to associate workflows with models.
@@ -44,9 +44,9 @@ return new class() extends Migration {
     public function up()
     {
         Schema::table(config('venture.workflow_table'), function (Blueprint $table) {
-        	$table->nullableMorphs('workflowable'); 
+        	$table->nullableMorphs('workflowable');
         });
-        
+
         Schema::table(config('venture.jobs_table'), function (Blueprint $table) {
             $table->timestamp('gated_at')->nullable();
             $table->timestamp('started_at')->nullable();
