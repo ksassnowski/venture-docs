@@ -12,7 +12,7 @@ Starting with version 4.0, Venture requires Laravel 9.
 
 **Likelihood of Impact: Very High**
 
-::: warning Migration don’t run automatically anymore
+::: warning Migrations don’t run automatically anymore
 Venture 4 no longer registers its migrations to run automatically. This means that from now on, you will need to create the migration to add any new columns yourself. The exact columns to add will always be listed in the upgrade guide and no database changes will happen in minor releases.
 :::
 

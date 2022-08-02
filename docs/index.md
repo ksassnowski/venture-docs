@@ -16,11 +16,11 @@ hero:
 features:
     - icon: ⚡️
       title: Super charge your queues
-      details: Lorem ipsum...
+      details: Venture takes Laravel’s already powerful queue system and turns it to 11.
     - icon: 🔋
       title: Batteries included
-      details: Lorem ipsum...
+      details: lorem ipsum...
     - icon: 🛠
       title: Built with extensibility in mind
-      details: Lorem ipsum
+      details: Venture comes with a robust plugin system which allows you easily change and extend its behavior.
 ---
