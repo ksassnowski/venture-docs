@@ -519,7 +519,7 @@ use App\Notifications\PublishingPodcastFailed;
 use App\Models\Podcast;
 use Sassnowski\Venture\AbstractWorkflow;
 use Sassnowski\Venture\WorkflowDefinition;
-use Sassnowski\Venture\WorkflowStepInterface;
+use Sassnowski\Venture\WorkflowableJob;
 
 class PublishPodcastWorkflow extends AbstractWorkflow
 {
@@ -531,7 +531,7 @@ class PublishPodcastWorkflow extends AbstractWorkflow
     {
         return $this->define('Publish Podcast')
             // ...
-            ->catch(function (Workflow $workflow, WorkflowStepInterface $step, Throwable $exception) {
+            ->catch(function (Workflow $workflow, WorkflowableJob $step, Throwable $exception) {
                 $this->podcast->user->notify(
                     new PublishingPodcastFailed(
                         $this->podcast,
@@ -639,7 +639,7 @@ use Sassnowski\Venture\WorkflowDefinition;
 class PublishPodcastWorkflow extends AbstractWorkflow
 {
     /**
-     * @param array<string, WorkflowStepInterface> $jobs
+     * @param array<string, WorkflowableJob> $jobs
      */
     public function beforeNesting(array $jobs): void
     {

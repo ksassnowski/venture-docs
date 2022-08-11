@@ -297,7 +297,7 @@ $podcast = new Podcast(['optimization_enabled' => true]);
 PublishPodcastWorkflow::test($podcast)
     ->assertJobExists(
     	OptimizePodcast::class, 
-    	function (WorkflowStepInterface $job) {
+    	function (WorkflowableJob $job) {
             return $job->getQueue() === 'high-priority';
         }
 	);
@@ -328,7 +328,7 @@ $podcast = new Podcast(['optimization_enabled' => false]);
 PublishPodcastWorkflow::test($podcast)
     ->assertJobMissing(
     	OptimizePodcast::class, 
-    	function (WorkflowStepInterface $job) {
+    	function (WorkflowableJob $job) {
             return $job->getQueue() === 'high-priority';
         }
 	);

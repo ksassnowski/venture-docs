@@ -1,20 +1,20 @@
 # Preparing your Jobs
 
-Any job you want to add to a workflow needs to implement `WorkflowStepInterface`. 
+Any job you want to add to a workflow needs to implement `WorkflowableJob`. 
 
 ```php{5,7}
 <?php
     
 namespace App\Jobs;
 
-use Sassnowski\Venture\WorkflowStepInterface;
+use Sassnowski\Venture\WorkflowableJob;
 
-class MyJob implements WorkflowStepInterface
+class MyJob implements WorkflowableJob
 {
 }
 ```
 
-This interface defines quite a few methods that Venture uses internally to configure your jobs. If you are interested in the specifics, you can check out the interface [on GitHub](https://github.com/ksassnowski/venture/tree/master/src/WorkflowStepInterface.php).
+This interface defines quite a few methods that Venture uses internally to configure your jobs. If you are interested in the specifics, you can check out the interface [on GitHub](https://github.com/ksassnowski/venture/tree/master/src/WorkflowableJob.php).
 
 Luckily, Venture also comes with a handy `WorkflowStep` trait which automatically implements this interface for you.
 
@@ -24,9 +24,9 @@ Luckily, Venture also comes with a handy `WorkflowStep` trait which automaticall
 namespace App\Jobs;
 
 use Sassnowski\Venture\WorkflowStep;
-use Sassnowski\Venture\WorkflowStepInterface;
+use Sassnowski\Venture\WorkflowableJob;
 
-class MyJob implements WorkflowStepInterface
+class MyJob implements WorkflowableJob
 {
     use WorkflowStep;
 }
@@ -41,9 +41,9 @@ namespace App\Jobs;
 
 - use Illuminate\Bus\Queueable;
 use Sassnowski\Venture\WorkflowStep;
-use Sassnowski\Venture\WorkflowStepInterface;
+use Sassnowski\Venture\WorkflowableJob;
 
-class MyJob implements WorkflowStepInterface
+class MyJob implements WorkflowableJob
 {
     use WorkflowStep;
 -   use Queueable;

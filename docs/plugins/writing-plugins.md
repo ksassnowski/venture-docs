@@ -190,7 +190,7 @@ final class JobAdding
 | Property      | Type                                         | Description                                                  |
 | ------------- | -------------------------------------------- | ------------------------------------------------------------ |
 | `$definition` | `WorkflowDefinition`                         | The `WorkflowDefinition` object to which the job is getting added. You can get the actual workflow class the definition belongs to via the `$definition->workflow()` method. |
-| `$job`        | `WorkflowStepInterface`                      | The job instance that is being added to the definition.      |
+| `$job`        | `WorkflowableJob`                      | The job instance that is being added to the definition.      |
 | `$name`       | `string|null`                                | The name of the job that was passed to the `addJob` method. You can change the name of the job by setting this property on the event. If `$name` is still `null` after all event listeners have been called, the FQCN of the job class will get used instead. |
 | `$delay`      | `DateTimeInterface|DateInterval| array|null` | The delay for the job that was passed to the `addJob` method. You can change the delay of the job by setting this property on the event. |
 | `$jobID`      | `string|null`                                | The ID of the job that was passed to the `addJob` method. You can change the ID of the job by setting this property on the event. |
@@ -208,7 +208,7 @@ final class JobAdded
 {
     public function __construct(
         public WorkflowDefinition $definition,
-        public WorkflowStepInterface $job,
+        public WorkflowableJob $job,
     ) {
     }
 }
@@ -217,7 +217,7 @@ final class JobAdded
 | Parameter     | Type                    | Description                                                  |
 | ------------- | ----------------------- | ------------------------------------------------------------ |
 | `$definition` | `WorkflowDefinition`    | The definition the job was added to. You can get the actual workflow class via the `$definition->workflow()` method. |
-| `$job`        | `WorkflowStepInterface` | The job instance that was added.                             |
+| `$job`        | `WorkflowableJob` | The job instance that was added.                             |
 
 ### `JobCreating` {#job-creating}
 
@@ -243,7 +243,7 @@ final class JobCreating
 | Parameter   | Type          | Description                                                  |
 | ----------- | ------------- | ------------------------------------------------------------ |
 | `$workflow` | `Workflow`    | The workflow Eloquent model that the job is associated with. |
-| `$job`      | `WorkflowJob` | The Eloquent model of the job that is about to be saved. You can retrieve the related `WorkflowStepInterface` via the `$job->step()` method. |
+| `$job`      | `WorkflowJob` | The Eloquent model of the job that is about to be saved. You can retrieve the related `WorkflowableJob` via the `$job->step()` method. |
 
 ### `JobCreated` {#job-created}
 
@@ -267,7 +267,7 @@ final class JobCreated
 
 | Parameter | Type          | Description                                                  |
 | --------- | ------------- | ------------------------------------------------------------ |
-| `$job`    | `WorkflowJob` | The Eloquent model of the job that is about to be saved. You can retrieve the related `WorkflowStepInterface` via the `$job->step()` method. You can retrieve the associated workflow model via `$job->workflow`. |
+| `$job`    | `WorkflowJob` | The Eloquent model of the job that is about to be saved. You can retrieve the related `WorkflowableJob` via the `$job->step()` method. You can retrieve the associated workflow model via `$job->workflow`. |
 
 ### `JobFailed` {#job-failed}
 
@@ -282,7 +282,7 @@ Corresponds to `PluginContext::onJobFailed`.
 final class JobFailed
 {
     public function __construct(
-        public WorkflowStepInterface $job,
+        public WorkflowableJob $job,
         public Throwable $exception,
     ) {
     }
@@ -291,7 +291,7 @@ final class JobFailed
 
 | Parameter    | Type                    | Description                                                  |
 | ------------ | ----------------------- | ------------------------------------------------------------ |
-| `$job`       | `WorkflowStepInterface` | The failed job instance. You can retry a job by calling its `retry` method. |
+| `$job`       | `WorkflowableJob` | The failed job instance. You can retry a job by calling its `retry` method. |
 | `$exception` | `Throwable`             | The exception that occurred while processing the job.        |
 
 ### `JobFinished` {#job-finished}
@@ -306,7 +306,7 @@ Corresponds to `PluginContext::onJobFinished`.
 final class JobFinished
 {
     public function __construct(
-        public WorkflowStepInterface $job,
+        public WorkflowableJob $job,
     ) {
     }
 }
@@ -314,7 +314,7 @@ final class JobFinished
 
 | Parameter | Type                    | Description       |
 | --------- | ----------------------- | ----------------- |
-| `$job`    | `WorkflowStepInterface` | The job instance. |
+| `$job`    | `WorkflowableJob` | The job instance. |
 
 ### `JobProcessing` {#job-processing}
 
@@ -329,7 +329,7 @@ Corresponds to `PluginContext::onJobProcessing`.
 final class JobProcessing
 {
     public function __construct(
-        public WorkflowStepInterface $job,
+        public WorkflowableJob $job,
     ) {
     }
 }
@@ -337,7 +337,7 @@ final class JobProcessing
 
 | Parameter | Type                    | Description       |
 | --------- | ----------------------- | ----------------- |
-| `$job`    | `WorkflowStepInterface` | The job instance. |
+| `$job`    | `WorkflowableJob` | The job instance. |
 
 ### `WorkflowAdding` {#workflow-adding}
 
@@ -482,7 +482,7 @@ Corresponds to `PluginContext::onWorkflowStarted`.
 final class WorkflowStarted
 {
     /**
-     * @param array<int, WorkflowStepInterface> $initialJobs
+     * @param array<int, WorkflowableJob> $initialJobs
      */
     public function __construct(
         public AbstractWorkflow $workflow,
@@ -497,4 +497,4 @@ final class WorkflowStarted
 | -------------- | ----------------------------------- | ------------------------------------------------------------ |
 | `$workflow`    | `AbstractWorkflow`                  | The workflow class of the started workflow.                  |
 | `$model`       | `Workflow`                          | The Eloquent model of the started workflow.                  |
-| `$initialJobs` | `array<int, WorkflowStepInterface>` | The job instances of the initial jobs that were dispatched when the workflow was started. |
+| `$initialJobs` | `array<int, WorkflowableJob>` | The job instances of the initial jobs that were dispatched when the workflow was started. |

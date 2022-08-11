@@ -15,9 +15,9 @@ The `Workflow` and `WorkflowJob` models delegate to a state object to compute th
 ```php
 interface WorkflowState
 {
-    public function markJobAsFinished(WorkflowStepInterface $job): void;
+    public function markJobAsFinished(WorkflowableJob $job): void;
 
-    public function markJobAsFailed(WorkflowStepInterface $job, Throwable $exception): void;
+    public function markJobAsFailed(WorkflowableJob $job, Throwable $exception): void;
 
     public function allJobsHaveFinished(): bool;
 

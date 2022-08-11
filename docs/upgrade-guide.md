@@ -68,22 +68,22 @@ Version 4 of Venture removed the `opis/closure` dependency. If you’ve been usi
 
 If you still need backwards compatibility for older workflows, you should add `opis/closure` to your `composer.json` manually.
 
-### Jobs should implement `WorkflowStepInterface`
+### Jobs should implement `WorkflowableJob`
 
 **Likelihood of Impact: Optional (but highly recommended)**
 
-Up until now, workflow jobs only had to use the `WorkflowStep` trait in order to use them as part of a workflow. Venture 4 introduces a `WorkflowStepInterface` that all jobs need to implement.
+Up until now, workflow jobs only had to use the `WorkflowStep` trait in order to use them as part of a workflow. Venture 4 introduces a `WorkflowableJob` that all jobs need to implement.
 
-In Venture 4, jobs that don’t implement the interface yet will get wrapped in an adapter class internally. Adding these jobs to a workflow will trigger a deprecation warning. Starting with Venture 5, support for jobs that don’t implement the `WorkflowStepInterface` will be dropped.
+In Venture 4, jobs that don’t implement the interface yet will get wrapped in an adapter class internally. Adding these jobs to a workflow will trigger a deprecation warning. Starting with Venture 5, support for jobs that don’t implement the `WorkflowableJob` will be dropped.
 
-The `WorkflowStep` trait automatically implements the `WorkflowStepInterface`. This means all you will have to do is add the interface to your job’s class declaration.
+The `WorkflowStep` trait automatically implements the `WorkflowableJob`. This means all you will have to do is add the interface to your job’s class declaration.
 
 ```diff
 use Sassnowski\Venture\WorkflowStep;
-+ use Sassnowski\Venture\WorkflowStepInterface;
++ use Sassnowski\Venture\WorkflowableJob;
 
 - class MyJob
-+ class MyJob implements WorkflowStepInterface
++ class MyJob implements WorkflowableJob
 {
 	use WorkflowStep;
 }
