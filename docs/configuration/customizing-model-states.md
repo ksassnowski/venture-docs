@@ -160,7 +160,7 @@ use Sassnowski\Venture\Venture;
 /**
  * Bootstrap any application services.
  */
-public function boot(): voidääs
+public function boot(): void
 {
     Venture::useWorkflowState(WorkflowState::class);
     Venture::useWorkflowJobState(WorkflowJobState::class);
