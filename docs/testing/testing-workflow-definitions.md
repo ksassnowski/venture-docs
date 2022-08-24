@@ -465,3 +465,133 @@ PublishPodcastWorkflow::test($podcast)
 ```
 
 ## Testing workflow callbacks
+
+Venture comes with test helpers to help you test your workflow’s `then` and `catch` callbacks. All examples in this section assume the following workflow.
+
+```php
+<?php
+    
+use Throwable;
+use App\Models\Podcast;
+use App\Notifications\PodcastFailedToPublish;
+use App\Notifications\PodcastWasPublished;
+use Sassnowski\Venture\AbstractWorkflow;
+use Sassnowski\Venture\Models\Workflow;
+use Sassnowski\Venture\WorkflowDefinition;
+use Sassnowski\Venture\WorkflowableJob;
+
+class PublishPodcastWorkflow extends AbstractWorkflow
+{
+    public function __construct(private Podcast $podcast)
+    {
+    }
+    
+    public function definition(): WorkflowDefinition
+    {
+        return $this->define('Publish Podcast')
+            ->addJob(...)
+            ->then(function (Workflow $workflow) {
+            	$this->podcast->user->notify(
+                    new PodcastWasPublished($podcast),
+                );
+            })
+            ->catch(function (Workflow $workflow, WorkflowableJob $failedJob, Throwable $exception) {
+                $this->podcast->user->notify(
+                    new PodcastFailedToPublish($podcast),
+                );
+            });
+    }
+}
+```
+
+### Testing the `then` callback
+
+You may test the workflow’s `then` callback by using the `runThenCallback` method on the `WorkflowTester`
+
+```php
+<?php
+    
+use App\Models\Podcast;
+use App\Notifications\PodcastWasPublished;
+use App\Workflows\PublishPodcastWorkflow;
+use Illuminate\Support\Facades\Notification;
+use Sassnowski\Venture\Models\Workflow;
+use Tests\TestCase;
+    
+class PublishPodcastWorkflowTest extends TestCase
+{
+	public function testNotifyUserAfterWorkflowWasPublished()
+	{
+    	Notification::fake();
+	    $podcast = Podcast::factory()->create();
+    
+    	PublishPodcastWorkflow::test($podcast)
+            ->runThenCallback();
+        
+        Notification::assertSentTo(
+            [$podcast->user],
+            PodcastWasPublished::class,
+        )
+	}   
+}
+```
+
+If you want to configure the `Workflow` model that gets passed to the `then` callback, you may optionally pass a callback to the `runThenCallback` method.
+
+```php
+PublishPodcastWorkflow::test($podcast)
+    ->runThenCallback(function (Workflow $workflow) {
+    	$workflow->update(['finished_at' => now()->subDay()]);    
+    });
+```
+
+### Testing the `catch` callback
+
+You may teste the `catch` callback of your workflow by using the `runCatchCalback` method on the `WorkflowTester`. This method expects both the failed job as well as the exception that occurred while executing the job as parameters.
+
+```php
+<?php
+    
+use App\Exceptions\EncodingException;
+use App\Jobs\EncodePodcast;
+use App\Models\Podcast;
+use App\Notifications\PodcastFailedToPublish;
+use App\Workflows\PublishPodcastWorkflow;
+use Illuminate\Support\Facades\Notification;
+use Sassnowski\Venture\Models\Workflow;
+use Tests\TestCase;
+    
+class PublishPodcastWorkflowTest extends TestCase
+{
+	public function testNotifyUserAfterWorkflowWasPublished()
+	{
+    	Notification::fake();
+	    $podcast = Podcast::factory()->create();
+    
+    	PublishPodcastWorkflow::test($podcast)
+            ->runCatchCallback(
+            	new EncodePodcast($podcast),
+            	new EncodingException(),
+        	);
+        
+        Notification::assertSentTo(
+            [$podcast->user],
+            PodcastFailedToPublish::class,
+        )
+	}   
+}
+```
+
+If you want to configure the `Workflow` model that gets passed to the `catch` callback, you may pass an optional callback as the third parameter to the `runCatchCallback` method.
+
+```php
+PublishPodcastWorkflow::test($podcast)
+    ->runCatchCallback(
+    	new EncodePodcast($podcast),
+		new EncodingException(),
+        function (Workflow $workflow) {
+            $workflow->cancel();
+        },
+	);
+```
+

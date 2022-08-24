@@ -1,3 +1,3 @@
 node_modules/
-docs/.vuepress/public/**/workflow*.svg
-docs/.vuepress/dist/
+docs/public/**/workflow*.svg
+docs/.vitepress/dist/

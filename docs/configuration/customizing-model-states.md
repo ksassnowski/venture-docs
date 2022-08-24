@@ -37,41 +37,80 @@ interface WorkflowState
 
 Below is a list of all methods that need to be implemented along with a description of what they do and Venture’s default behavior.
 
-#### `markJobAsFinished`
+#### `markJobAsFinished` {#mark-job-as-finished}
 
-_todo_
+This method is called every time a job inside a workflow was processed successfully.
 
-#### `markJobAsFailed`
+#### Default behavior
 
-_todo_
+- Add the job’s id to the workflow’s `finished_jobs` array 
+- Increment the `jobs_processed` field on the workflow
+- Mark the job itself as finished by calling the job state’s [`markAsFinished`](#mark-as-finished) method.
 
-#### `allJobsHaveFinished`
+#### `markJobAsFailed` {#mark-job-as-failed}
 
-_todo_
+This method is called every time an exception occurred while processing a job.
 
-#### `isFinished`
+#### Default behavior
 
-_todo_
+- Increment the workflow’s `jobs_failed` field
+- Mark the job itself as failed by calling the job state’s [`markAsFailed`](#mark-as-failed) method with the exception
 
-#### `markAsFinished`
+#### `allJobsHaveFinished` {#all-jobs-have-finished}
 
-_todo_
+This method is used to check if all jobs of the workflow have been processed successfully.
 
-#### `isCancelled`
+#### Default behavior
 
-_todo_
+- Check that the workflow’s `job_count` field equals the workflow’s `jobs_processed` field
+
+#### `isFinished` {#is-finished}
+
+This method checks if the workflow itself has finished successfully. Note that this is different from [`allJobsHaveFinished`](#all-jobs-have-finished) which only checks that all jobs inside the workflow have finished successfully.
+
+#### Default behavior
+
+- Check if the `finished_at` timestamp of the workflow is not `null`
+
+#### `markAsFinished` {#workflow-mark-as-finished}
+
+This method marks the workflow as finished. After this method was called, [`isFinished`](#is-finished) must return `true`.
+
+#### Default behavior
+
+- Set the `finished_at` timestamp of the workflow to the current time
+
+#### `isCancelled` {#is-cancelled}
+
+This method checks if the workflow has been cancelled.
+
+#### Default behavior
+
+- Check if the `cancelled_at` timestamp of the workflow is not `null`
 
 #### `markAsCancelled`
 
-_todo_
+This method marks the workflow as cancelled. After this method was called, [`isCancelled`](#is-cancelled) must return `true`. This method should be _idempodent_, meaning it should be possible to safely call it multiple times for the same workflow.
 
-#### `remainingJobs`
+#### Default behavior
 
-_todo_
+- Set the `cancelled_at` timestamp of the workflow to the current time if it isn’t set already
 
-#### `hasRan`
+#### `remainingJobs` {#remaining-jobs}
 
-_todo_
+This method returns the number of jobs that have not been processed successfully yet.
+
+#### Default behavior
+
+- Return `$workflow->job_count - $workflow->jobs_processed`
+
+#### `hasRan` {#has-ran}
+
+This method checks if all jobs of the workflow have been run, regardless of success or failure of the job.
+
+#### Default behavior
+
+- Return `$workflow->jobs_processed + $workflow->jobs_failed === $workflow->job_count`
 
 ### The `WorkflowJobState` interface
 
@@ -104,11 +143,11 @@ interface WorkflowJobState
 
 Below is a list of all methods that need to be implemented along with a description of what they do and Venture’s default behavior.
 
-#### `hasFinished`
+#### `hasFinished` {#has-finished}
 
 _todo_
 
-#### `markAsFinished`
+#### `markAsFinished` {#job-mark-as-finished}
 
 _todo_
 
