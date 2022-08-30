@@ -1,6 +1,6 @@
 # What is Venture?
 
-Venture is a package that builds on top of Laravel’s queue system. It allows you to build complex workflows from regular Laravel jobs. You can define [dependencies between jobs](/configuring-workflows#jobs-with-dependencies), [conditionally add jobs](/onfiguring-workflows#conditional-jobs) to workflows, add [manual gates](/configuring-workflows#gated-jobs) for jobs and much more.
+Venture is a package that builds on top of Laravel’s queue system. It allows you to build complex workflows from regular Laravel jobs. You can define [dependencies between jobs](/usage/configuring-workflows#jobs-with-dependencies), [conditionally add jobs](/usage/configuring-workflows#conditional-jobs) to workflows, add [manual gates](/usage/configuring-workflows#gated-jobs) for jobs and much more.
 
 Venture will take care of running the jobs in the correct order, parallelizing jobs that don't have any interdependencies and waiting for all dependencies of a job to be resolved before starting it.
 
@@ -28,7 +28,7 @@ The full process could look something like this in diagram form:
     <img src="/workflow.svg" />
 </div>
 
-Venture allows you to take all your individual jobs and build a [workflow](/configuring-workflows) from them. The workflow definition for the diagram above would look like this:
+Venture allows you to take all your individual jobs and build a [workflow](/usage/configuring-workflows) from them. The workflow definition for the diagram above would look like this:
 
 ```php
 class PublishNewPodcastWorkflow extends AbstractWorkflow
@@ -81,7 +81,7 @@ $workflow = PublishNewPodcastWorkflow::start($podcast);
 
 From this point on, Venture takes care of everything else. It immediately dispatches all jobs that don’t have any dependencies so they can be processed in parallel. Jobs get dispatched automatically once all dependencies have successfully been processed. For example, after both `ReleaseOnApplePodcasts` and `ReleaseOnTransistorFM`  have finished, Venture will automatically dispatch the `NotifySubscribers` job since it depended on both of these jobs.
 
-Not only that, Venture also allows you to [inspect the state](/keeping-track-of-workflows) of started workflows. This allows you to show the state of a workflow to your user, for example.
+Not only that, Venture also allows you to [inspect the state](/usage/keeping-track-of-workflows) of started workflows. This allows you to show the state of a workflow to your user, for example.
 
 ```php
 $workflow->isFinished();
