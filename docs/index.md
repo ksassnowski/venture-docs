@@ -14,13 +14,10 @@ hero:
           link: /what-is-venture
 
 features:
-    - icon: ⚡️
-      title: Super charge your queues
+    - title: Super charge your queues
       details: Venture takes Laravel’s already powerful queue system and turns it to 11.
-    - icon: 🔋
-      title: Batteries included
-      details: lorem ipsum...
-    - icon: 🛠
-      title: Built with extensibility in mind
+    - title: Batteries included
+      details: Venture comes with all the tools you need to build and manage complex, asynchronous workflows. Just install and start building amazing things.
+    - title: Built with extensibility in mind
       details: Venture comes with a robust plugin system which allows you easily change and extend its behavior.
 ---

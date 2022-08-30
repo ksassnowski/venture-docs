@@ -145,47 +145,111 @@ Below is a list of all methods that need to be implemented along with a descript
 
 #### `hasFinished` {#has-finished}
 
-_todo_
+This method checks if the job has been processed successfully.
+
+#### Default behavior
+
+- Check if the `finished_at` timestamp of the job is not `null`
 
 #### `markAsFinished` {#job-mark-as-finished}
 
-_todo_
+This method is called whenever a job has been processed successfully. After this method was called, `hasFinished` must return `true` and `hasFailed`, `isProcessing`, `isPending`, and `isGated` must return `false`.
+
+#### Default behavior
+
+- Set the `finished_at` timestamp of the job to the current time
+- Set the `exception` field of the job to `null` in case the job hadfailed previously
+- Set the `failed_at` field of the job to null in case the job had failed previously
 
 #### `hasFailed`
 
-_todo_
+This method checks if the most recent run of the job was unsuccessful.
+
+#### Default behavior
+
+- Check that `hasFinished` is false
+- Check if the `failed_at` timestamp of the job is not `null`
 
 #### `markAsFailed`
 
-_todo_
+This method marks the job as failed. After this method was called, `hasFailed` must return true and `hasFinished`, `isProcessing`, `isPending`, and `isGated` must return `false`.
+
+#### Default behavior
+
+- Set the `failed_at` timestamp of the job to the current time
+- Save the exception to the `exception` field of the job
 
 #### `isProcessing`
 
-_todo_
+This method checks if the job has been picked up by a worker and is currently being processed. If this method is `true`, all other methods checking the job’s state must return `false`.
+
+#### Default behavior
+
+- Check that the job has not finished yet by calling `hasFinished`
+- Check that the job has not failed yet by calling `hasFailed`
+- Check that the `started_at` field of the job is `null`
 
 #### `markAsProcessing`
 
-_todo_
+This method checks marks the job as currently being processed by a worker. After this method was called, `isProcessing` must return `true` and all other methods checking the job’s state must return `false`.
+
+#### Default behavior
+
+- Set the `finished_at` field of the job to `null`
+- Set the `failed_at` field of the job to `null`
+- Set the `exception` field of the job to `null`
+- Set the `started_at` timestamp of the job to the current time
 
 #### `isPending`
 
-_todo_
+This method checks if the job has not run yet. Note that this does not mean that the job can actually run as it might still have unfinished dependencies.
+
+#### Default behavior
+
+- Check that the job is not currently being processed by calling [`isProcessing`](#job-is-processing)
+- Check that the job has not failed by calling [`hasFailed`](#job-has-failed)
+- Check that the job has not been successfully processed yet by calling [`hasFinished`](#job-has-finished)
 
 #### `isGated`
 
-_todo_
+This method checks if the job is gated and waiting to be started manually. If this method returns `true`, all dependencies of the job must have been processed successfully.
+
+#### Default behavior
+
+- Check that job is a gated job by checking if the `gated` field of the job is `true`
+- Check that job has not been processed successfully by calling [`hasFinished`](#job-has-finished)
+- Check that job has not failed by calling [`hasFailed`](#job-has-failed)
+- Check that the job is not currently being processed by calling [`isProcessing`](#job-is-processing)
+- Check that the `gated_at` field of the job is not `null`
 
 #### `markAsGated`
 
-_todo_
+This method marks the job as gated. After this method was called, [`isGated`](#job-is-gated) must return `true`. This method should throw an exception if the job is not a gated job.
+
+#### Default behavior
+
+- Throw an exception if the `gated` field of the job is not `true`
+- Set the `gated_at` field of the job to the current time
 
 #### `transition`
 
-_todo_
+This method is called on all jobs that are about to be dispatched by the `JobDispatcher` component. The main purpose is to transition a job to a different state based on the current state of the workflow _before_ the job gets dispatched.
+
+Venture uses this to prevent gated jobs from actually being dispatched by [marking them as gated](#job-mark-as-gated) if their dependencies have been processed successfully.
+
+#### Default behavior
+
+- Mark the job as gated by calling [`markAsGated`](#job-mark-as-gated) if the job is a gated job and all its dependencies have finished
 
 #### `canRun`
 
-_todo_
+This method checks if a job is ready to be dispatched. This method is called by the `JobDispatcher` to filter out jobs that should not get dispatched. This method is called after the [`transition`](#job-transition) method of the job has been called.
+
+#### Default behavior
+
+- Check that the job is currently pending by calling [`isPending`](#job-is-pending)
+- Check that the job is not gated by calling [`isGated`](#job-is-gated)
+- Check that all dependencies of the job have finished by comparing the job’s dependencies with the `finished_jobs` field of the associated workflow
 
 ## Swapping out states
 
@@ -206,3 +270,32 @@ public function boot(): void
 }
 ```
 
+Workflow states get resolved out of Laravel’s container, so it’s possible to type hint any dependencies you might need in the constructor. All state model’s **must** take the `Workflow` or `WorkflowJob` as the first constructor parameter, respectively.
+
+```php
+class CustomWorkflowState implements WorkflowState
+{
+    public function __construct(
+        private Workflow $workflow, 
+        private OtherDependency $someOtherDependency,
+    ) {
+    }
+    
+    /* ... */
+}
+
+class CustomWorkflowJobState implements WorkflowJobState
+{
+    public function __construct(
+        private WorkflowJob $job, 
+        private OtherDependency $someOtherDependency,
+    ) {
+    }
+    
+    /* ... */
+}
+```
+
+::: danger Parameter names
+Note that the first parameters **must** be called `$workflow` and `$job`, respectively, as they get injected by name.
+:::
