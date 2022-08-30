@@ -47,14 +47,16 @@ export default {
     docsRepo: "ksassnowski/venture-docs",
     logo: "/logo.svg",
     siteTitle: false,
+
+    algolia: {
+      appId: "F938IIKXFS",
+      apiKey: "f7d5b3899217cf276ffb1dde445bf37c",
+      indexName: "laravel-venture",
+    },
+
     footer: {
       message: "Released under the MIT License.",
       copyright: "Made by Kai Sassnowski",
-    },
-
-    algolia: {
-      apiKey: "aaf12df2ddf34696e87f6ae1f8e5cfe3",
-      indexName: "laravel_venture",
     },
 
     socialLinks: [
