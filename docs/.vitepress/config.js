@@ -39,6 +39,7 @@ export default {
     ["meta", { name: "msapplication-TileColor", content: "#3a0839" }],
     ["meta", { name: "msapplication-config", content: "/browserconfig.xml" }],
     ["meta", { name: "theme-color", content: "#ffffff" }],
+    ["script", { src: "https://cdn.usefathom.com/script.js", 'data-site': 'UEEUNDDU', defer: true }],
   ],
 
   themeConfig: {
