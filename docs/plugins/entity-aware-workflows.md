@@ -10,14 +10,14 @@ To activate the plugin, you may call `Venture::registerPlugin` inside your appli
 
 ```php
 <?php
-    
+
 use Illuminate\Support\ServiceProvider;
 use Sassnowski\Venture\Venture;
 use Sassnowski\Venture\Plugin\EntityAwareWorkflows;
 
 class AppServiceProvider extends ServiceProvider
 {
-    public function boot(): void
+    public function register(): void
     {
         Venture::registerPlugin(
             EntityAwareWorkflows::class,
@@ -32,7 +32,7 @@ Every workflow that should get associated with a model needs to implement the `E
 
 ```php
 <?php
-    
+
 use App\Models\Podcast;
 use Illuminate\Database\Eloquent\Model;
 use Sassnowski\Venture\AbstractWorkflow;
@@ -44,20 +44,20 @@ class PublishPodcastWorkflow extends AbstractWorkflow implements EntityAwareWork
     public function __construct(private Podcast $podcast)
     {
     }
-    
+
     public function definition(): WorkflowDefinition
     {
         // ...
     }
-    
+
     public function getWorkflowable(): Model
     {
-     	return $this->podcast->user;   
+     	return $this->podcast->user;
     }
 }
 ```
 
-The `EntityAwareWorkflow` interface defines a single method `getWorkflowable`.  This method should return the model that the workflow should get associated with.
+The `EntityAwareWorkflow` interface defines a single method `getWorkflowable`. This method should return the model that the workflow should get associated with.
 
 Only workflows that implement this interface will get processed by the plugin.
 
@@ -70,4 +70,3 @@ $workflow = PublishPodcastWorkflow::start($podcast);
 
 $user = $workflow->workflowable;
 ```
-
