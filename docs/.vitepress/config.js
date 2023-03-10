@@ -116,6 +116,10 @@ export default {
             link: "/plugins/entity-aware-workflows",
             text: "Entity aware workflows",
           },
+          {
+            link: "/plugins/laravel-actions",
+            text: "Laravel Actions",
+          },
         ],
       },
       {
