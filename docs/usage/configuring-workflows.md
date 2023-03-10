@@ -430,6 +430,134 @@ case, the dependency will be completely removed from the job if no corresponding
 job exists in the workflow. If that leaves a job without any dependencies, it
 will be dispatched immediately after the workflow starts.
 
+## Grouped jobs
+
+It can often be useful to add jobs to a workflow in a loop. For example, instead
+of adding a single `NotifySubscribers` job to the workflow, maybe you want to
+add one job per subscriber instead. One option to do this would be to loop over
+the podcast's subscribers and manually call `$workflow->addJob` for each
+subscriber.
+
+```php{9-14}
+$definition = $this->define('Publish Podcast')
+   ->addJob(new ProcessPodcast($this->podcast))
+    ->addJob(new OptimizePodcast($this->podcast))
+    ->addJob(new PublishOnTransistorFM($this->podcast), [
+        ProcessPodcast::class,
+        OptimizePodcast::class,
+    ]);
+
+foreach ($this->podcast->subscribers as $subscriber) {
+    $definition->addJob(
+        new NotifySubscriber($this->podcast, $subscriber),
+        [PublishOnTransistorFM::class],
+    );
+}
+
+return $definition;
+```
+
+This works, but it's pretty verbose and forces us to break the fluent interface
+of the definition. In a case like this, Venture provides an `each` method which
+allows us to add an instance of a job to the workflow for each element in a
+collection. Using the `each` method, we can rewrite the previous example like
+this, instead.
+
+```php{8-15}
+return $this->define('Publish Podcast')
+    ->addJob(new ProcessPodcast($this->podcast))
+    ->addJob(new OptimizePodcast($this->podcast))
+    ->addJob(new PublishOnTransistorFM($this->podcast), [
+        ProcessPodcast::class,
+        OptimizePodcast::class,
+    ])
+    ->each(
+        $this->podcast->subscribers,
+        fn (Subscriber $subscriber) => new NotifySubscriber(
+            $this->podcast,
+            $subscriber,
+        ),
+        dependencies: [PublishOnTransitorFM::class],
+    );
+```
+
+Venture will call the provided callback for each element of the provided
+collection and add the returned job to the workflow. Behind the scenes, Venture
+will automatically configure the dependencies of each of the added job.
+
+Venture also takes care of assigning each job a unique id. By default, Venture
+will enumerate the FQCN of the job, for instance `App\Jobs\NotifySubscribers-1`,
+`App\Jobs\NotifySubscribers-2`, and so on.
+
+### Configuring grouped jobs
+
+Another benefit of grouping jobs is that it allows us to configure each job in
+the group the same way without having to repeat ourselves.
+
+```php{8-15}
+$this->define('Publish Podcast')
+    ->each(
+        $this->podcast->subscribers,
+        fn (Subscriber $subscriber) => new NotifySubscriber(
+            $this->podcast,
+            $subscriber,
+        ),
+        // Sets the dependencies of each added job
+        dependencies: [],
+        // Sets the name of each added job
+        name: 'Notify podcast subscriber'
+        // Sets the delay of each added job
+        delay: 60 * 60,
+        // Sets the id of each added job
+        id: 'notify-subscribers',
+    );
+```
+
+When providing an explicit id, Venture will take care of adding a prefix to each
+job's id to guarantee unique ids. All we have to do is provide an id the same
+way we would for a single job.
+
+Passing an explicit id to the `each` method also registers the jobs as a group
+inside the workflow's dependency graph. This allows us to easily reference all
+jobs inside a group, for example when we want to add a job that should
+[depend on all jobs of a group](/usage/configuring-workflows#depending-on-grouped-jobs).
+
+### Depending on grouped jobs
+
+Say we want to add a new job to the workflow which should only run once all jobs
+inside a group have finished. To do so, we can use the `GroupDependency` when
+defining the dependencies of a job.
+
+```php{10,14}
+use Sassnowski\Venture\Graph\GroupDependency;
+
+$this->define('Publish Podcast')
+    ->each(
+        $this->podcast->subscribers,
+        fn (Subscriber $subscriber) => new NotifySubscriber(
+            $this->podcast,
+            $subscriber,
+        )
+        id: 'notify-subscribers',
+    )
+    ->addJob(
+        new NotifyAuthor($this->podcast),
+        [GroupDependency::forGroup('notify-subscribers')],
+    );
+```
+
+This will make sure the `NotifyAuthor` job will only run once all jobs inside
+the `notify-subscribers` group have successfully finished. The group name passed
+to the `GroupDependency::forGroup` method needs to match the `id` of the group.
+
+::: warning Note
+
+When adding a group dependency, make sure that you defined an **explicit** `id`
+for the group. Otherwise, Venture won't register the jobs as a group and will be
+unable to resolve the group referenced inside `GroupDependency::forGroup`.
+
+:::
+
 ## Configuring job queues
 
 You have multiple options to configure which queue or queue connection each job
