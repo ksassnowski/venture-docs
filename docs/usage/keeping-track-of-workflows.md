@@ -11,8 +11,12 @@ When you start a workflow, an instance of the workflow will be returned.
 $workflow = PublishPodcastWorkflow::start($podcast);
 ```
 
-::: tip Note A workflow is just a regular Eloquent model, so you can do all the
-things with it that you're used to from Eloquent. :::
+::: tip Note
+
+A workflow is just a regular Eloquent model, so you can do all the things with
+it that you're used to from Eloquent.
+
+:::
 
 A workflow instance exposes several methods to inspect and manipulate its
 current state.

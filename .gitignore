@@ -1,3 +1,4 @@
 node_modules/
 docs/public/**/workflow*.svg
 docs/.vitepress/dist/
+docs/.vitepress/cache/

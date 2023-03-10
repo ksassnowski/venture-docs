@@ -16,7 +16,11 @@ return [
 ];
 ```
 
-:::danger Important If you want to customize the table names, you need to do so
-**before** running the migrations. Changing them afterwards will not only not
-have an effect, it will actually lead to an error because the Eloquent models
-will try and look for a table that doesn't exist. :::
+:::danger Important
+
+If you want to customize the table names, you need to do so **before** running
+the migrations. Changing them afterwards will not only not have an effect, it
+will actually lead to an error because the Eloquent models will try and look for
+a table that doesn't exist.
+
+:::

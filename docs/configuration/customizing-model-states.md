@@ -4,10 +4,13 @@ Venture allows you to change the state transitioning behavior of your workflows
 and jobs. This gives you full control over extending Venture in ways that
 wouldn’t be possible with regular plugins.
 
-::: warning With great power comes great responsibility This is an escape hatch
-that most applications won’t ever need. By changing how and when workflows and
-jobs transition their states, you are now responsible for maintaining sensible
-and consistent states. Use at your own risk. :::
+::: warning With great power comes great responsibility
+
+This is an escape hatch that most applications won’t ever need. By changing how
+and when workflows and jobs transition their states, you are now responsible for
+maintaining sensible and consistent states. Use at your own risk.
+
+:::
 
 ## Model states
 
@@ -355,5 +358,9 @@ class CustomWorkflowJobState implements WorkflowJobState
 }
 ```
 
-::: danger Parameter names Note that the first parameters **must** be called
-`$workflow` and `$job`, respectively, as they get injected by name. :::
+::: danger Parameter names
+
+Note that the first parameters **must** be called `$workflow` and `$job`,
+respectively, as they get injected by name.
+
+:::

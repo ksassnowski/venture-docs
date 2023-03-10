@@ -58,9 +58,11 @@ Now, there are 4 paths through this function:
 
 This is something you should probably test.
 
-::: tip Conditional jobs In case you don’t know how the `when` method works,
-check out the section about
+::: tip Conditional jobs
+
+In case you don’t know how the `when` method works, check out the section about
 [adding conditional jobs to workflows](/usage/configuring-workflows#conditional-jobs).
+
 :::
 
 Another example could be to schedule the release of the podcast ahead of time,
@@ -195,10 +197,14 @@ public function definition(): WorkflowDefinition
 }
 ```
 
-::: tip Depending on conditional jobs Confused about what the deal is with this
-`ConditionalDependency::whenDefined()` business? Check out the section about
+::: tip Depending on conditional jobs
+
+Confused about what the deal is with this `ConditionalDependency::whenDefined()`
+business? Check out the section about
 [depending on conditional jobs](/usage/configuring-workflows#depending-on-conditional-jobs)
-to learn more. :::
+to learn more.
+
+:::
 
 This single workflow can now take on very different shapes depending on its
 input. For cases like these, Venture provides you with a few helper methods that
@@ -269,9 +275,11 @@ Below is a list of all available assertions to inspect a workflow’s definition
 - [`assertWorkflowExists`](#assert-workflow-exists)
 - [`assertWorkflowMissing`](#assert-workflow-missing)
 
-::: details Using the correct job ID in assertions Be aware that all assertions
-check if a workflow contains a job for a given **ID**. This means that when
-adding a job with an explicit id, you have to use the same id in the assertions.
+::: details Using the correct job ID in assertions
+
+Be aware that all assertions check if a workflow contains a job for a given
+**ID**. This means that when adding a job with an explicit id, you have to use
+the same id in the assertions.
 
 ```php
 $this->define('Publish Podcast')
@@ -336,13 +344,17 @@ PublishPodcastWorkflow::test($podcast)
 	);
 ```
 
-::: tip Using the right assertion `assertJobExists` is the most generic
-assertion to check if a workflow contains a certain job. It is useful when you
-want to check multiple properties of a job at the same time.
+::: tip Using the right assertion
+
+`assertJobExists` is the most generic assertion to check if a workflow contains
+a certain job. It is useful when you want to check multiple properties of a job
+at the same time.
 
 If you only want to check for specific properties of a job—for example its
 dependencies—using one of the more specific assertions is going to be more
-expressive and yield clearer errors if the assertion fails. :::
+expressive and yield clearer errors if the assertion fails.
+
+:::
 
 ### `assertJobMissing` {#assert-job-missing}
 
@@ -498,11 +510,15 @@ PublishPodcastWorkflow::test($podcast)
 This checks for an **exact** match of the workflow’s dependencies so be sure to
 provide all dependencies the workflow should have.
 
-::: warning Note `assertWorkflowExists` does **not** work recursively, meaning
-it will always return `false` when checking for a workflow that is part of
-another nested workflow. You shouldn't test the internals of your dependencies.
-Instead, write another test for `EncodePodcastWorkflow` and check for the nested
-workflow there. :::
+::: warning Note
+
+`assertWorkflowExists` does **not** work recursively, meaning it will always
+return `false` when checking for a workflow that is part of another nested
+workflow. You shouldn't test the internals of your dependencies. Instead, write
+another test for `EncodePodcastWorkflow` and check for the nested workflow
+there.
+
+:::
 
 ### `assertWorkflowMissing` {#assert-workflow-missing}
 

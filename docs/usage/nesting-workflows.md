@@ -69,10 +69,13 @@ words, so here's what the resulting workflow will look like:
 Starting a workflow means starting all jobs that can be run in parallel. This is
 why Venture connected all root nodes of the nested workflow with the job.
 
-:::warning Note The `EncodePodcastWorkflow` box in the diagram is only there for
-the sake of demonstration. The outer workflow won't have any reference to a
-nested workflow. It's as if you would have added all of the nested workflow's
-jobs individually. :::
+:::warning Note
+
+The `EncodePodcastWorkflow` box in the diagram is only there for the sake of
+demonstration. The outer workflow won't have any reference to a nested workflow.
+It's as if you would have added all of the nested workflow's jobs individually.
+
+:::
 
 ## Depending on a nested workflow
 

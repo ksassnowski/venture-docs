@@ -43,7 +43,11 @@ A cancelled workflow will not execute any further jobs. It does not affect jobs
 that have already run or jobs that were already processing when the workflow was
 cancelled.
 
-::: tip Cancelling an already cancelled job The `cancel` method of a workflow is
+::: tip Cancelling an already cancelled job
+
+The `cancel` method of a workflow is
 [idempotent](https://en.wikipedia.org/wiki/Idempotence), meaning you can safely
 call it multiple times without updating the timestamp everytime. It will remain
-the date the workflow was first cancelled. :::
+the date the workflow was first cancelled.
+
+:::

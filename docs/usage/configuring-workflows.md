@@ -113,21 +113,27 @@ $this->define('Publish new podcast')
     <img src="/workflow-4.svg" />
 </div>
 
-::: details Direct and transitive dependencies If we look at the diagram above,
-`TranslateAudioTranscription` has a _direct_ dependency on
-`CreateAudioTranscription`. `CreateAudioTranscription` in turn has a dependency
-on `ProccessPodcast`. This makes `ProcessPodcast` a _transitive_ dependency of
-`TranslateAudioTranscription` (think dependency of a dependency).
+::: details Direct and transitive dependencies
+
+If we look at the diagram above, `TranslateAudioTranscription` has a _direct_
+dependency on `CreateAudioTranscription`. `CreateAudioTranscription` in turn has
+a dependency on `ProccessPodcast`. This makes `ProcessPodcast` a _transitive_
+dependency of `TranslateAudioTranscription` (think dependency of a dependency).
 
 You don't have to worry about how exactly a job fits into a workflow, however.
 All you need to know is what other jobs a job _directly depends_ on and Venture
-will figure out the rest. :::
+will figure out the rest.
 
-::: tip Multiple instances of the same job Since you specify the dependencies of
-a job by using class names, you might be wondering what happens if the workflow
-contains multiple instances of the same job. To learn how to deal with this
-situation, check out the section on
-[using multiple instances of the same job](/usage/duplicate-jobs). :::
+:::
+
+::: tip Multiple instances of the same job
+
+Since you specify the dependencies of a job by using class names, you might be
+wondering what happens if the workflow contains multiple instances of the same
+job. To learn how to deal with this situation, check out the section on
+[using multiple instances of the same job](/usage/duplicate-jobs).
+
+:::
 
 ## Naming jobs
 
@@ -149,10 +155,14 @@ $workflow->jobs[0]->name;
 // "Process podcast"
 ```
 
-::: tip Tip If you plan on displaying the workflow jobs to your users, you could
-pass in a translation string as the job name. This way, you would be able to
-display the localized name of the job in the UI by using Laravel's built-in
-[localization features](https://laravel.com/docs/8.x/localization). :::
+::: tip Tip
+
+If you plan on displaying the workflow jobs to your users, you could pass in a
+translation string as the job name. This way, you would be able to display the
+localized name of the job in the UI by using Laravel's built-in
+[localization features](https://laravel.com/docs/8.x/localization).
+
+:::
 
 ## Adding closures as jobs
 
@@ -390,9 +400,13 @@ not, both jobs would depend on `DowngradePodcastQuality` instead.
 
 ![](/workflow-conditional-dependency.svg)
 
-:::tip Testing workflow definitions Things are starting to get complicated now!
-You might also want to check out the section on how to go about
-[testing your workflow definitions](/testing/testing-workflow-definitions). :::
+:::tip Testing workflow definitions
+
+Things are starting to get complicated now! You might also want to check out the
+section on how to go about
+[testing your workflow definitions](/testing/testing-workflow-definitions).
+
+:::
 
 Conditional dependencies can be combined with regular dependencies, too.
 
@@ -461,9 +475,10 @@ $this->define('Publish Podcast')
 	);
 ```
 
-::: warning Configuration precedence Note that calling `allOnQueue` or
-`allOnConnection` will always take precedence over a job’s individual
-configuration.
+::: warning Configuration precedence
+
+Note that calling `allOnQueue` or `allOnConnection` will always take precedence
+over a job’s individual configuration.
 
 ```php
 $this->define('Publish Podcast')
@@ -516,10 +531,11 @@ What this will do is set the queue connection for all jobs of the workflow to
 use Laravel’s `sync` driver. This can be useful when developing locally or when
 debugging a workflow.
 
-::: details Synchronous evaluation of workflows By definition, Venture cannot
-process multiple jobs in parallel when running a workflow synchronously. Instead
-Venture will perform a **depth-first** evaluation of the workflow’s dependency
-graph.
+::: details Synchronous evaluation of workflows
+
+By definition, Venture cannot process multiple jobs in parallel when running a
+workflow synchronously. Instead Venture will perform a **depth-first**
+evaluation of the workflow’s dependency graph.
 
 In a depth-first evaluation, Venture will start by running the first job of the
 workflow. After that job has finished, Venture will then try to recursively
@@ -529,7 +545,9 @@ can until it hits a job that is still waiting on another dependency to be
 resolved.
 
 This won’t change the actual behavior of your workflow. I just thought it was
-neat. :::
+neat.
+
+:::
 
 ### Starting workflows on different queue connections
 
@@ -596,9 +614,12 @@ $this->define('Publish Podcast')
     ->then(new SendNotification());
 ```
 
-:::tip Global event listeners If you want to perform some action after _any_
-workflow has finished, check out the section on
-[writing plugins](/plugins/writing-plugins). :::
+:::tip Global event listeners
+
+If you want to perform some action after _any_ workflow has finished, check out
+the section on [writing plugins](/plugins/writing-plugins).
+
+:::
 
 ## Defining an error callback {#workflow-error-callback}
 
@@ -650,10 +671,14 @@ By default, Venture will keep processing other jobs of the workflow that are
 unaffected by the failed job. This means that the `catch` callback for a
 workflow can get called multiple times if multiple jobs fail.
 
-::: tip Dealing with errors The fact that Venture keeps processing a workflow
-even if one of the workflow’s steps has failed is a feature, not a bug. Check
-out the section on [dealing with errors](/usage/dealing-with-errors) on why this
-is a useful property and also how to change this behavior when necessary. :::
+::: tip Dealing with errors
+
+The fact that Venture keeps processing a workflow even if one of the workflow’s
+steps has failed is a feature, not a bug. Check out the section on
+[dealing with errors](/usage/dealing-with-errors) on why this is a useful
+property and also how to change this behavior when necessary.
+
+:::
 
 ## Adding jobs at runtime
 
@@ -677,12 +702,15 @@ just like you would inside the `definition` method itself.
 
 Note that this only changes the definition for this _instance_ of the workflow.
 
-::: warning With great power comes great responsibility While this feature can
-be useful in certain situations to dynamically add jobs to a workflow’s
-definition, it is something you should use sparingly. The recommended approach
-most of the time is to define all jobs a workflow can have inside the
-`definition` method. This way, you can see the entire structure of a workflow by
-just looking at this method. :::
+::: warning With great power comes great responsibility
+
+While this feature can be useful in certain situations to dynamically add jobs
+to a workflow’s definition, it is something you should use sparingly. The
+recommended approach most of the time is to define all jobs a workflow can have
+inside the `definition` method. This way, you can see the entire structure of a
+workflow by just looking at this method.
+
+:::
 
 To start a workflow instance, you may call the `run` method on it.
 
@@ -697,10 +725,13 @@ specifiy the queue connection for all jobs of the workflow.
 $workflow->run('sync');
 ```
 
-::: danger You cannot change a started workflow’s definition Note that is a way
-of dynamically changing a workflow’s definition _before_ it gets started. This
-won’t have an effect for workflows that are already running as their definitions
-are immutable. :::
+::: danger You cannot change a started workflow’s definition
+
+Note that is a way of dynamically changing a workflow’s definition _before_ it
+gets started. This won’t have an effect for workflows that are already running
+as their definitions are immutable.
+
+:::
 
 ## Lifecycle hooks
 
@@ -732,13 +763,16 @@ The `beforeCreate` hook gets passed the `Workflow` Eloquent model for the
 workflow. At this point, the model hasn’t been saved to the database yet, which
 means it won’t have an ID yet.
 
-::: tip Performing the same action for all workflows The `beforeCreate` hook on
-the workflow allows you define actions that are specific to a workflow. If you
-want to perform the same action for _all_ of your workflows, you should
+::: tip Performing the same action for all workflows
+
+The `beforeCreate` hook on the workflow allows you define actions that are
+specific to a workflow. If you want to perform the same action for _all_ of your
+workflows, you should
 [write a plugin](/plugins/writing-plugins#workflow-creating), instead.
 
 If all you want to do is associate workflows with models, you should check out
 the built-in [Entity Aware Workflows plugin](/plugins/entity-aware-workflows).
+
 :::
 
 ### `beforeNesting` {#hook-before-nesting}

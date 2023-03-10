@@ -41,9 +41,12 @@ public function install(PluginContext $context): void
 }
 ```
 
-::: tip Available events See the [section below](#available-events) for a
-complete list of all methods the `PluginContext` exposes as well as their
-corresponding events. :::
+::: tip Available events
+
+See the [section below](#available-events) for a complete list of all methods
+the `PluginContext` exposes as well as their corresponding events.
+
+:::
 
 You aren’t limited to a single event handler per event. You can call the same
 method of the `PluginContext` multiple times to register multiple handlers.
@@ -126,11 +129,14 @@ class MyPlugin implements Plugin
 }
 ```
 
-::: danger Plugins get registered during `boot` Be aware that plugins get
-installed when the `boot` method of Venture’s service provider gets called. This
-means that any setup that needs to happen during the `register` phase of the
-application startup–such as registering container bindings–should not be
-performed inside a plugin. :::
+::: danger Plugins get registered during `boot`
+
+Be aware that plugins get installed when the `boot` method of Venture’s service
+provider gets called. This means that any setup that needs to happen during the
+`register` phase of the application startup–such as registering container
+bindings–should not be performed inside a plugin.
+
+:::
 
 ## Registering Plugins
 

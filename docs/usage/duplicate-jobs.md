@@ -93,10 +93,14 @@ $this->define('Publish podcast')
     )
 ```
 
-::: tip Note Venture always depends on the id of a job internally, even if you
-don't explicitly provide one. In these cases, the fully qualified name (or
-**FQCN** for short) of the class will be used as the id. This means that this
-really isn't any different than depending on regular, non-duplicate job. :::
+::: tip Note
+
+Venture always depends on the id of a job internally, even if you don't
+explicitly provide one. In these cases, the fully qualified name (or **FQCN**
+for short) of the class will be used as the id. This means that this really
+isn't any different than depending on regular, non-duplicate job.
+
+:::
 
 ## Duplicate jobs in nested workflows
 
@@ -158,10 +162,14 @@ The above example would produce a workflow like this.
     <img src="/flac-bois-workflow.svg" />
 </div>
 
-:::danger Note While it is technically possible to directly depend on a job from
-a nested workflow, you should always depend on the **workflow** instead.
-Depending on a job inside a nested workflow not only breaks encapsulation, it
-could potentially change the structure of the workflow.
+:::danger Note
+
+While it is technically possible to directly depend on a job from a nested
+workflow, you should always depend on the **workflow** instead. Depending on a
+job inside a nested workflow not only breaks encapsulation, it could potentially
+change the structure of the workflow.
 
 If you find yourself continuously needing to depend on a nested job, it might be
-a sign that you should extract this dependency into its own workflow. :::
+a sign that you should extract this dependency into its own workflow.
+
+:::
