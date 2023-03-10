@@ -1,6 +1,7 @@
 # Customizing Models
 
-You can change the models used by Venture internally by defining your own model and extending the corresponding Venture model:
+You can change the models used by Venture internally by defining your own model
+and extending the corresponding Venture model:
 
 ```php
 use Sassnowski\Venture\Models\Workflow as VentureWorkflow;
@@ -11,7 +12,9 @@ class Workflow extends VentureWorkflow
 }
 ```
 
-After defining your model, you can instruct Venture to use your custom model via the `Sassnowski\Venture\Venture` class. The best place to do so is in the `boot` method of one of your application’s service provider classes:
+After defining your model, you can instruct Venture to use your custom model via
+the `Sassnowski\Venture\Venture` class. The best place to do so is in the `boot`
+method of one of your application’s service provider classes:
 
 ```php
 use App\Models\Venture\Workflow;
@@ -27,4 +30,3 @@ public function boot(): void
     Venture::useWorkflowJobModel(WorkflowJob::class);
 }
 ```
-

@@ -39,7 +39,14 @@ export default {
     ["meta", { name: "msapplication-TileColor", content: "#3a0839" }],
     ["meta", { name: "msapplication-config", content: "/browserconfig.xml" }],
     ["meta", { name: "theme-color", content: "#ffffff" }],
-    ["script", { src: "https://station-to-station-sparkling.laravel-venture.com/script.js", 'data-site': 'UEEUNDDU', defer: true }],
+    [
+      "script",
+      {
+        src: "https://station-to-station-sparkling.laravel-venture.com/script.js",
+        "data-site": "UEEUNDDU",
+        defer: true,
+      },
+    ],
   ],
 
   themeConfig: {
@@ -105,7 +112,10 @@ export default {
         collapsible: true,
         items: [
           { link: "/plugins/writing-plugins", text: "Writing plugins" },
-          { link: "/plugins/entity-aware-workflows", text: "Entity aware workflows" },
+          {
+            link: "/plugins/entity-aware-workflows",
+            text: "Entity aware workflows",
+          },
         ],
       },
       {

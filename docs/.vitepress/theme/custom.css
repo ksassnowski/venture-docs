@@ -1,14 +1,14 @@
 :root {
-    --vp-c-brand: #ff2d20;
-    --vp-c-brand-dark: #ff2d20;
-    --vp-c-brand-light: #f1625b;
-    --vp-c-brand-lighter: #fc837c;
+  --vp-c-brand: #ff2d20;
+  --vp-c-brand-dark: #ff2d20;
+  --vp-c-brand-light: #f1625b;
+  --vp-c-brand-lighter: #fc837c;
 }
 
 img {
-    margin: 0 auto;
+  margin: 0 auto;
 }
 
 img.VPImage.logo {
-    margin: 0;
+  margin: 0;
 }

@@ -1,6 +1,7 @@
 # Keeping track of workflows
 
-Venture allows you to keep track of the state of your workflows after starting them.
+Venture allows you to keep track of the state of your workflows after starting
+them.
 
 ## Workflows
 
@@ -10,11 +11,11 @@ When you start a workflow, an instance of the workflow will be returned.
 $workflow = PublishPodcastWorkflow::start($podcast);
 ```
 
-::: tip Note
-A workflow is just a regular Eloquent model, so you can do all the things with it that you're used to from Eloquent.
-:::
+::: tip Note A workflow is just a regular Eloquent model, so you can do all the
+things with it that you're used to from Eloquent. :::
 
-A workflow instance exposes several methods to inspect and manipulate its current state.
+A workflow instance exposes several methods to inspect and manipulate its
+current state.
 
 ```php
 // The date the workflow finished...
@@ -64,7 +65,8 @@ $workflow->jobs();
 $workflow->jobs;
 ```
 
-A `WorkflowJob` exposes the following methods to inspect and manipulate its state.
+A `WorkflowJob` exposes the following methods to inspect and manipulate its
+state.
 
 ```php
 // Indicates if the workflow job is pending, i.e. is still waiting
@@ -114,4 +116,3 @@ $workflowJob->start();
 // has not failed.
 $workflowJob->retry();
 ```
-

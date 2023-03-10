@@ -1,12 +1,18 @@
 # Faking Workflows
 
-When testing code that deals with workflows, you may wish to mock out the workflow so that it is not actually executed during a given test.
+When testing code that deals with workflows, you may wish to mock out the
+workflow so that it is not actually executed during a given test.
 
-Similar to how most of Laravel's built-in facades work, Venture also provides a way to record which workflows would have been started. This way, you can easily assert that a workflow was started or not without actually dispatching any jobs.
+Similar to how most of Laravel's built-in facades work, Venture also provides a
+way to record which workflows would have been started. This way, you can easily
+assert that a workflow was started or not without actually dispatching any jobs.
 
 ## Recording started workflows
 
-In your tests, you may use the `Workflow` facade’s `fake` method to record which workflows were started. You can then use the [available assertions](#available-assertions) on the `Workflow` face to verify if a workflow was started or not.
+In your tests, you may use the `Workflow` facade’s `fake` method to record which
+workflows were started. You can then use the
+[available assertions](#available-assertions) on the `Workflow` face to verify
+if a workflow was started or not.
 
 ```php
 <?php
@@ -49,7 +55,10 @@ The `assertStarted` method asserts that a given workflow was started.
 Workflow::assertStarted(PublishPodcastWorkflow::class);
 ```
 
-This method also takes a closure as an optional second parameter. This closure gets called for each started workflow that matches the provided workflow class. If the closure returns true for at least one workflow, the assertion passes. Otherwise it fails.
+This method also takes a closure as an optional second parameter. This closure
+gets called for each started workflow that matches the provided workflow class.
+If the closure returns true for at least one workflow, the assertion passes.
+Otherwise it fails.
 
 ```php
 Workflow::assertStarted(
@@ -60,7 +69,8 @@ Workflow::assertStarted(
 );
 ```
 
-The closure also gets passed the queue connection the workflow was started on as the second parameter.
+The closure also gets passed the queue connection the workflow was started on as
+the second parameter.
 
 ```php
 Workflow::fake();
@@ -83,7 +93,11 @@ The `assertNotStarted` method asserts that a given workflow was not started.
 Workflow::assertNotStarted(PublishPodcastWorkflow::class);
 ```
 
-This method also takes a closure as an optional second parameter. If a closure is provided, the assertion won’t immediately fail if a workflow was started. Instead, it will call the closure for each started workflow. If the closure returns `true` for any of the workflow, the assertions fails. Otherwise it passes.
+This method also takes a closure as an optional second parameter. If a closure
+is provided, the assertion won’t immediately fail if a workflow was started.
+Instead, it will call the closure for each started workflow. If the closure
+returns `true` for any of the workflow, the assertions fails. Otherwise it
+passes.
 
 ```php
 Workflow::assertNotStarted(
@@ -94,7 +108,8 @@ Workflow::assertNotStarted(
 );
 ```
 
-The closure also gets passed the queue connection the workflow was started on as the second parameter.
+The closure also gets passed the queue connection the workflow was started on as
+the second parameter.
 
 ```php
 Workflow::fake();
@@ -109,11 +124,14 @@ Workflow::assertNotStarted(
 );
 ```
 
-In the example above, the assertion will pass even though a `PublishPodcastWorkflow` was started because it was not started on the `sync` connection.
+In the example above, the assertion will pass even though a
+`PublishPodcastWorkflow` was started because it was not started on the `sync`
+connection.
 
 ### `assertStartedOnConnection` {#assert-started-on-connection}
 
-The `assertStartedOnConnection` method asserts that a given workflow was started on a specific queue connection.
+The `assertStartedOnConnection` method asserts that a given workflow was started
+on a specific queue connection.
 
 ```php
 Workflow::assertStartedOnConnection(
