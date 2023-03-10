@@ -189,6 +189,24 @@ $this->define('My Workflow')
     }, id: 'log-truth');
 ```
 
+You can access the closure's job by accepting a `$job` parameter.
+
+```php{1,4}
+use Sassnowski\Venture\WorkflowableJob;
+
+$this->define('My Workflow')
+    ->addJob(function (WorkflowableJob $job) {
+        Log::info($job->workflow());
+    });
+```
+
+::: warning Note
+
+The parameter name **must** be `$job` in order for the job to get injected
+properly.
+
+:::
+
 ## Gated jobs
 
 By default, a job will get dispatched automatically as soon as all of its
